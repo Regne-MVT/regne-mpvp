@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📚 Trading Strategies Book</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg-primary: #0d0f14;
+    --bg-secondary: #13161e;
+    --bg-tertiary: #1a1e2a;
+    --bg-card: #1e2330;
+    --accent: #6c63ff;
+    --accent-glow: rgba(108, 99, 255, 0.3);
+    --accent-2: #00d4aa;
+    --accent-3: #ff6b6b;
+    --text-primary: #e8eaf0;
+    --text-secondary: #8892a4;
+    --text-muted: #4a5568;
+    --border: rgba(255,255,255,0.06);
+    --border-hover: rgba(108, 99, 255, 0.4);
+    --sidebar-w: 300px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    height: 100vh;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease;
+    z-index: 100;
+  }
+
+  .sidebar-header {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(108,99,255,0.12) 0%, transparent 100%);
+  }
+
+  .sidebar-header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #6c63ff, #00d4aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.3px;
+  }
+
+  .sidebar-header p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  #search-box {
+    margin: 12px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    width: calc(100% - 24px);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  #search-box:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  #search-box::placeholder { color: var(--text-muted); }
+
+  #nav-list {
+    list-style: none;
+    overflow-y: auto;
+    flex: 1;
+    padding: 8px 8px 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-muted) transparent;
+  }
+
+  #nav-list li {
+    margin: 3px 0;
+  }
+
+  #nav-list li button {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.4;
+  }
+
+  #nav-list li button:hover {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border);
+  }
+
+  #nav-list li.active button {
+    background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(0,212,170,0.1));
+    color: #fff;
+    border-color: var(--border-hover);
+    box-shadow: 0 0 12px rgba(108,99,255,0.15);
+  }
+
+  .nav-icon { font-size: 16px; flex-shrink: 0; }
+
+  .chapter-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 12px 14px 4px;
+  }
+
+  /* ── MAIN ── */
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  #topbar {
+    padding: 14px 32px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(13,15,20,0.8);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  #topbar .breadcrumb {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #topbar .breadcrumb span { color: var(--text-secondary); }
+
+  #toggle-sidebar {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    padding: 7px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+  #toggle-sidebar:hover { border-color: var(--accent); color: var(--accent); }
+
+  .progress-bar {
+    height: 2px;
+    background: var(--border);
+    flex: 1;
+    max-width: 200px;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    border-radius: 99px;
+    transition: width 0.3s;
+  }
+
+  #content-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 48px 36px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-muted) transparent;
+  }
+
+  #loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 16px;
+    color: var(--text-muted);
+  }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    gap: 20px;
+    padding: 40px;
+  }
+
+  #welcome .big-icon { font-size: 72px; line-height: 1; }
+
+  #welcome h2 {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #6c63ff, #00d4aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  #welcome p {
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 400px;
+    line-height: 1.6;
+  }
+
+  /* ── MARKDOWN STYLES ── */
+  .md-body {
+    max-width: 1060px;
+    margin: 0 auto;
+    line-height: 1.8;
+    font-size: 16px;
+    color: var(--text-primary);
+  }
+
+  .md-body h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, #a0aec0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg, var(--accent), var(--accent-2), transparent) 1;
+    line-height: 1.3;
+  }
+
+  .md-body h2 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #c3b9ff;
+    margin: 36px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .md-body h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #90cdf4;
+    margin: 28px 0 12px;
+  }
+
+  .md-body h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent-2);
+    margin: 20px 0 10px;
+  }
+
+  .md-body p {
+    margin: 12px 0;
+    color: #d1d9e6;
+  }
+
+  .md-body strong { color: #fff; font-weight: 600; }
+  .md-body em { color: #b794f4; font-style: italic; }
+
+  .md-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-glow); }
+  .md-body a:hover { border-color: var(--accent); }
+
+  .md-body hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+
+  .md-body code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: var(--bg-card);
+    color: #a8ff78;
+    padding: 2px 7px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+  }
+
+  .md-body pre {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 16px 0;
+    position: relative;
+  }
+
+  .md-body pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #a8ff78;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .md-body blockquote {
+    border-left: 3px solid var(--accent);
+    background: rgba(108,99,255,0.08);
+    padding: 14px 20px;
+    margin: 16px 0;
+    border-radius: 0 10px 10px 0;
+    color: #b794f4;
+    font-style: italic;
+  }
+
+  /* GitHub-style alerts */
+  .md-body blockquote:has(p strong) { }
+
+  .alert-note {
+    border-left: 3px solid #63b3ed;
+    background: rgba(99,179,237,0.08);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 20px;
+    margin: 16px 0;
+    color: #bee3f8;
+  }
+  .alert-tip {
+    border-left: 3px solid var(--accent-2);
+    background: rgba(0,212,170,0.08);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 20px;
+    margin: 16px 0;
+    color: #b2f5ea;
+  }
+  .alert-important {
+    border-left: 3px solid #b794f4;
+    background: rgba(183,148,244,0.08);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 20px;
+    margin: 16px 0;
+    color: #e9d8fd;
+  }
+  .alert-warning {
+    border-left: 3px solid #f6ad55;
+    background: rgba(246,173,85,0.08);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 20px;
+    margin: 16px 0;
+    color: #feebc8;
+  }
+  .alert-caution {
+    border-left: 3px solid var(--accent-3);
+    background: rgba(255,107,107,0.08);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 20px;
+    margin: 16px 0;
+    color: #fed7d7;
+  }
+
+  .md-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+
+  .md-body th {
+    background: var(--bg-card);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent-glow);
+    font-size: 13px;
+  }
+
+  .md-body td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-primary);
+    vertical-align: top;
+  }
+
+  .md-body tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .md-body ul, .md-body ol {
+    padding-left: 24px;
+    margin: 12px 0;
+  }
+
+  .md-body li {
+    margin: 6px 0;
+    color: #d1d9e6;
+  }
+
+  .md-body li::marker { color: var(--accent); }
+
+  /* ── NAV BUTTONS ── */
+  .page-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 860px;
+    margin: 48px auto 0;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    gap: 16px;
+  }
+
+  .page-nav button {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    padding: 12px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .page-nav button:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(108,99,255,0.1);
+    transform: translateY(-1px);
+  }
+
+  .page-nav button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .page-counter {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    #sidebar {
+      position: fixed;
+      left: 0; top: 0;
+      transform: translateX(-100%);
+    }
+    #sidebar.open { transform: translateX(0); }
+    #content-area { padding: 24px 20px; }
+  }
+
+  .fade-in { animation: fadeIn 0.35s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── VISUALIZATIONS ── */
+  .viz-container {
+    margin: 28px 0;
+    background: #13161e;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 20px;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+  .viz-title {
+    font-size: 13px; font-weight: 700; color: #7c6fff;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .viz-profiles { display: flex; gap: 12px; align-items: flex-start; flex-wrap: nowrap; }
+  .viz-profile { display: flex; flex-direction: column; gap: 6px; }
+  .viz-profile-label {
+    font-size: 11px; font-weight: 700; text-align: center;
+    padding: 4px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: .5px;
+  }
+  .viz-charts { display: flex; gap: 0; align-items: stretch; }
+  .viz-price-axis {
+    display: flex; flex-direction: column-reverse;
+    padding-right: 5px; font-family: 'JetBrains Mono',monospace;
+    font-size: 9px; color: #2d3748; min-width: 48px; text-align: right;
+  }
+  .viz-price-lbl { display: flex; align-items: center; justify-content: flex-end; }
+  .viz-price-lbl.poc  { color: #ffd700; font-weight: 700; }
+  .viz-price-lbl.vah  { color: #7c6fff; }
+  .viz-price-lbl.val  { color: #7c6fff; }
+  .viz-price-lbl.ibh  { color: #48bb78; }
+  .viz-price-lbl.ibl  { color: #48bb78; }
+  .viz-col-hdr {
+    font-size: 9px; font-weight: 700; color: #4a5568;
+    text-align: center; margin-bottom: 4px;
+    text-transform: uppercase; letter-spacing: .6px;
+  }
+  .viz-divider { width: 1px; background: rgba(255,255,255,0.06); margin: 0 5px; }
+  .viz-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .viz-legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #718096; }
+  .viz-legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .viz-note {
+    background: rgba(72,187,120,0.08); border: 1px solid rgba(72,187,120,0.25);
+    border-radius: 8px; padding: 10px 14px; font-size: 12px;
+    color: #68d391; margin-top: 12px; line-height: 1.6;
+  }
+  .viz-connector {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 0 8px; gap: 6px;
+  }
+  .viz-connector-arrow { font-size: 22px; color: #48bb78; }
+  .viz-connector-label {
+    font-size: 9px; font-weight: 700; color: #48bb78;
+    text-transform: uppercase; letter-spacing: .5px; writing-mode: vertical-rl;
+    text-orientation: mixed; transform: rotate(180deg);
+  }
+  .viz-bracket {
+    position: absolute; right: -14px;
+    border-right: 2px solid #48bb78;
+    border-top: 2px solid #48bb78;
+    border-bottom: 2px solid #48bb78;
+    border-radius: 0 4px 4px 0;
+    width: 10px;
+  }
+  .viz-bracket-label {
+    position: absolute; right: -52px;
+    font-size: 9px; font-weight: 700; color: #48bb78;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <h1>📚 Trading Book</h1>
+    <p>Market Profile Strategies</p>
+  </div>
+  <input type="text" id="search-box" placeholder="🔍  Search chapters..." oninput="filterNav(this.value)">
+  <ul id="nav-list"></ul>
+</aside>
+
+<!-- MAIN -->
+<main id="main">
+  <div id="topbar">
+    <button id="toggle-sidebar" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
+    <div class="breadcrumb">
+      <span>📖</span>
+      <span id="breadcrumb-text">Select a chapter</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <span class="page-counter" id="page-counter"></span>
+  </div>
+
+  <div id="content-area">
+    <div id="welcome">
+      <div class="big-icon">📚</div>
+      <h2>Trading Strategies Book</h2>
+      <p>Select a chapter from the sidebar to start reading. All Market Profile strategies are ready.</p>
+    </div>
+  </div>
+</main>
+
+<script>
+const files = [
+  { name: "Part 1 — Fundamental Concepts", file: "Part 1.md", icon: "📖" },
+  { name: "Part 2", file: "Part 2.md", icon: "📖" },
+  { name: "Part 3", file: "Part 3.md", icon: "📖" },
+  { name: "Strategy 1 — LVA", file: "strategy_1_lva_lesson.md", icon: "📊" },
+  { name: "Strategy 2 — LVA Fill", file: "strategy_2_lva_fill_lesson.md", icon: "📊" },
+  { name: "Strategy 3 — Open Drive", file: "strategy_3_open_drive_lesson.md", icon: "📊" },
+  { name: "Strategy 4 — Confluence IB", file: "strategy_4_confluence_ib_lesson.md", icon: "📊" },
+  { name: "Strategy 5 — Consolidation", file: "strategy_5_consolidation_lesson.md", icon: "📊" },
+  { name: "Strategy 6 — Wide IB", file: "strategy_6_wide_ib_lesson.md", icon: "📊" },
+  { name: "Strategy 7 — Trend Day", file: "strategy_7_trend_day_lesson.md", icon: "📊" },
+  { name: "Strategy 8 — Day Two Trend", file: "strategy_8_day_two_trend_lesson.md", icon: "📊" },
+  { name: "Strategy 9 — Engulfing", file: "strategy_9_engulfing_lesson.md", icon: "📊" },
+  { name: "Strategy 10 — Gap Day", file: "strategy_10_gap_day_lesson.md", icon: "📊" },
+  { name: "Strategy 11 — Tail Reversal", file: "strategy_11_tail_reversal_lesson.md", icon: "📊" },
+];
+
+let currentIndex = -1;
+let allItems = [];
+
+function buildNav() {
+  const ul = document.getElementById('nav-list');
+
+  // Parts group
+  const partsLabel = document.createElement('li');
+  partsLabel.className = 'chapter-label';
+  partsLabel.textContent = 'Notes & Parts';
+  ul.appendChild(partsLabel);
+
+  files.forEach((f, i) => {
+    const li = document.createElement('li');
+    li.dataset.idx = i;
+    li.dataset.name = f.name.toLowerCase();
+    const btn = document.createElement('button');
+    btn.id = `nav-btn-${i}`;
+    btn.innerHTML = `<span class="nav-icon">${f.icon}</span>${f.name}`;
+    btn.onclick = () => loadChapter(i);
+
+    if (i === 3) {
+      const stratLabel = document.createElement('li');
+      stratLabel.className = 'chapter-label';
+      stratLabel.textContent = 'Strategies';
+      ul.appendChild(stratLabel);
+    }
+
+    li.appendChild(btn);
+    ul.appendChild(li);
+    allItems.push(li);
+  });
+}
+
+function filterNav(query) {
+  const q = query.toLowerCase();
+  allItems.forEach(li => {
+    const name = li.dataset.name || '';
+    li.style.display = name.includes(q) ? '' : 'none';
+  });
+}
+
+async function loadChapter(idx) {
+  currentIndex = idx;
+
+  // Update nav active state
+  allItems.forEach(li => li.classList.remove('active'));
+  if (allItems[idx]) allItems[idx].classList.add('active');
+
+  // Update topbar
+  document.getElementById('breadcrumb-text').textContent = files[idx].name;
+  const pct = ((idx + 1) / files.length * 100).toFixed(0);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('page-counter').textContent = `${idx + 1} / ${files.length}`;
+
+  // Show loader
+  const area = document.getElementById('content-area');
+  area.innerHTML = `<div id="loading"><div class="spinner"></div><p>Loading chapter…</p></div>`;
+
+  try {
+    const resp = await fetch(files[idx].file);
+    if (!resp.ok) throw new Error('File not found: ' + files[idx].file);
+    const text = await resp.text();
+    renderMD(text, idx);
+  } catch (e) {
+    area.innerHTML = `<div style="padding:40px;color:#ff6b6b;">⚠️ Error: ${e.message}</div>`;
+  }
+}
+
+function renderMD(text, idx) {
+  // Pre-process GitHub alerts
+  text = text.replace(/^> \[!NOTE\]\s*\n((?:> .*\n?)*)/gm, (_, body) => {
+    const content = body.replace(/^> ?/gm, '').trim();
+    return `<div class="alert-note">📘 <strong>Note</strong><br>${marked.parse(content)}</div>\n\n`;
+  });
+  text = text.replace(/^> \[!TIP\]\s*\n((?:> .*\n?)*)/gm, (_, body) => {
+    const content = body.replace(/^> ?/gm, '').trim();
+    return `<div class="alert-tip">💡 <strong>Tip</strong><br>${marked.parse(content)}</div>\n\n`;
+  });
+  text = text.replace(/^> \[!IMPORTANT\]\s*\n((?:> .*\n?)*)/gm, (_, body) => {
+    const content = body.replace(/^> ?/gm, '').trim();
+    return `<div class="alert-important">⚠️ <strong>Important</strong><br>${marked.parse(content)}</div>\n\n`;
+  });
+  text = text.replace(/^> \[!WARNING\]\s*\n((?:> .*\n?)*)/gm, (_, body) => {
+    const content = body.replace(/^> ?/gm, '').trim();
+    return `<div class="alert-warning">🔶 <strong>Warning</strong><br>${marked.parse(content)}</div>\n\n`;
+  });
+  text = text.replace(/^> \[!CAUTION\]\s*\n((?:> .*\n?)*)/gm, (_, body) => {
+    const content = body.replace(/^> ?/gm, '').trim();
+    return `<div class="alert-caution">🚨 <strong>Caution</strong><br>${marked.parse(content)}</div>\n\n`;
+  });
+
+  const html = marked.parse(text);
+
+  const area = document.getElementById('content-area');
+  area.innerHTML = `
+    <div class="md-body fade-in">
+      ${html}
+      <div class="page-nav">
+        <button onclick="loadChapter(${idx - 1})" ${idx === 0 ? 'disabled' : ''}>← Previous</button>
+        <span class="page-counter">${idx + 1} of ${files.length}</span>
+        <button onclick="loadChapter(${idx + 1})" ${idx === files.length - 1 ? 'disabled' : ''}>Next →</button>
+      </div>
+    </div>`;
+  area.scrollTop = 0;
+  // Inject visualizations for this file
+  setTimeout(() => injectVisualizations(files[idx].file), 50);
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════
+//   VISUALIZATION ENGINE
+// ═══════════════════════════════════════════
+const VIZ_PERIODS = 'ABCDEFGHIJKLMN';
+const VIZ_CELL = 12;
+const VIZ_LETTER = 9;
+const VIZ_COLORS = {
+  va:'rgba(108,99,255,0.18)', vaBorder:'rgba(108,99,255,0.55)',
+  poc:'#ffd700', ib:'rgba(72,187,120,0.13)', ibBorder:'rgba(72,187,120,0.55)',
+  tail:'rgba(245,101,101,0.18)',
+  letters:['#7c6fff','#5eead4','#fbbf24','#f87171','#a78bfa','#34d399',
+            '#60a5fa','#f472b6','#fb923c','#a3e635','#38bdf8','#e879f9','#facc15','#4ade80'],
+};
+
+// ── REALISTIC TICK SIMULATOR ─────────────────
+function generateSimulatedProfile(type, startPrice) {
+  let currentPrice = startPrice;
+  const data = [];
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (let i=0; i<13; i++) {
+    const period = alphabet[i];
+    let pMin = currentPrice; let pMax = currentPrice; let pOpen = currentPrice;
+    for (let m=0; m<30; m++) {
+      let drift = 0; let vol = 2.5;
+      switch(type) {
+        case 'open_drive':
+          drift = 1.8; vol = 2; break; // relentless up
+        case 'open_test_drive':
+          if (i === 0 && m < 15) { drift = -2.5; vol = 3; } // test down
+          else { drift = 1.5; vol = 2; } // drive up
+          break;
+        case 'open_rejection':
+          if (i === 0) { drift = 1.5; vol = 4; } // fake up
+          else { drift = -2.0; vol = 3.5; } // hard reverse down
+          break;
+        case 'open_auction':
+          drift = Math.sin((i*30+m)/15) * 1.5; // swing
+          drift += (startPrice - currentPrice) * 0.05; // pull back
+          vol = 3.5; break;
+      }
+      currentPrice += drift + (Math.random() - 0.5) * vol * 2;
+      if (currentPrice < pMin) pMin = currentPrice;
+      if (currentPrice > pMax) pMax = currentPrice;
+    }
+    data.push({ period, lo: Math.round(pMin), hi: Math.round(pMax), open: Math.round(pOpen), close: Math.round(currentPrice) });
+  }
+  return data;
+}
+
+function vizBuildProfile(data, forcedMin, forcedMax) {
+  const allP = data.flatMap(d=>{const a=[];for(let v=d.lo;v<=d.hi;v++)a.push(v);return a;});
+  const pMin = forcedMin!==undefined ? forcedMin : Math.min(...allP);
+  const pMax = forcedMax!==undefined ? forcedMax : Math.max(...allP);
+  const rows = {};
+  for(let p=pMin;p<=pMax;p++) rows[p]=[];
+  data.forEach(d=>{ 
+    for(let p=d.lo;p<=d.hi;p++) {
+      if(!rows[p]) continue;
+      // ORGANIC JITTER: randomly skip edge TPOs for a realistic jagged look
+      if ((p === d.lo || p === d.hi) && Math.random() < 0.35) continue;
+      if ((p === d.lo+1 || p === d.hi-1) && Math.random() < 0.15) continue;
+      rows[p].push(d.period); 
+    }
+  });
+  let poc=pMin, maxC=0;
+  for(let p=pMin;p<=pMax;p++) if(rows[p].length>maxC){maxC=rows[p].length;poc=p;}
+  const total=Object.values(rows).reduce((s,v)=>s+v.length,0);
+  const target=Math.floor(total*0.7);
+  let vaC=rows[poc].length,vah=poc,val=poc;
+  while(vaC<target){
+    const up=vah<pMax?rows[vah+1].length:0, dn=val>pMin?rows[val-1].length:0;
+    if(up>=dn&&vah<pMax){vah++;vaC+=rows[vah].length;}else if(val>pMin){val--;vaC+=rows[val].length;}else break;
+  }
+  const ibP=data.filter(d=>d.period==='A'||d.period==='B');
+  const ibH=ibP.length?Math.max(...ibP.map(d=>d.hi)):pMax;
+  const ibL=ibP.length?Math.min(...ibP.map(d=>d.lo)):pMin;
+  let stLo=pMax; for(let p=pMax;p>=pMin;p--){if(rows[p].length===1)stLo=p;else break;}
+  let btHi=pMin; for(let p=pMin;p<=pMax;p++){if(rows[p].length===1)btHi=p;else break;}
+  const volume={};
+  for(let p=pMin;p<=pMax;p++){
+    const t=rows[p].length;
+    if(t===0){volume[p]=Math.round(15+Math.random()*55);continue;} // forced range = tiny but visible
+    if(t===1){volume[p]=Math.round(90+Math.random()*160);continue;} // single print = very thin
+    if(t<=2){volume[p]=Math.round(320+Math.random()*480);continue;} // low TPO = thin
+    const base=t*1600;
+    volume[p]=Math.max(400,Math.round(base+(Math.random()-.5)*base*0.55));
+  }
+  // Boost POC, add organic spikes
+  volume[poc]=Math.round((volume[poc]||1000)*1.7);
+  for(let p=pMin;p<=pMax;p++){
+    if(volume[p]>50&&Math.random()<0.2) volume[p]=Math.round(volume[p]*(0.45+Math.random()*0.7));
+  }
+  let vpPoc=pMin,maxV=0;
+  for(let p=pMin;p<=pMax;p++) if(volume[p]>maxV){maxV=volume[p];vpPoc=p;}
+  let vcnt=volume[vpPoc],vpVah=vpPoc,vpVal=vpPoc;
+  const vtotal=Object.values(volume).reduce((s,v)=>s+v,0);
+  const vtgt=Math.floor(vtotal*0.7);
+  while(vcnt<vtgt){
+    const up=vpVah<pMax?volume[vpVah+1]:0, dn=vpVal>pMin?volume[vpVal-1]:0;
+    if(up>=dn&&vpVah<pMax){vpVah++;vcnt+=volume[vpVah];}else if(vpVal>pMin){vpVal--;vcnt+=volume[vpVal];}else break;
+  }
+  return {rows,volume,pMin,pMax,poc,vah,val,ibH,ibL,stLo,btHi,vpPoc,vpVah,vpVal,data};
+}
+
+function vizDrawTPO(canvas, prof) {
+  const ctx=canvas.getContext('2d');
+  const {rows,pMin,pMax,poc,vah,val,ibH,ibL,stLo,btHi,data}=prof;
+  const count=pMax-pMin+1, W=canvas.width, H=canvas.height;
+  const rH=Math.max(1, Math.floor(H/count)); // ensure minimum height
+  function py(p){return H-(p-pMin)*rH-rH/2;}
+  ctx.fillStyle='#0a0c12'; ctx.fillRect(0,0,W,H);
+  
+  // Row height
+  const letterSz=Math.max(5,Math.min(VIZ_LETTER,rH-1));
+  const cellW=Math.max(7,letterSz+3);
+  
+  // VA Background
+  const vaTop=py(vah)-rH/2, vaBot=py(val)+rH/2;
+  ctx.fillStyle=VIZ_COLORS.va; ctx.fillRect(0,vaTop,W,vaBot-vaTop);
+  ctx.strokeStyle=VIZ_COLORS.vaBorder; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+  ctx.strokeRect(0,vaTop,W,vaBot-vaTop); ctx.setLineDash([]);
+  
+  // BACKGROUND CANDLESTICKS
+  if (data && data.length > 0 && data[0].open !== undefined) {
+    const cW = Math.min((W - 50) / data.length * 0.5, 6);
+    data.forEach((d, i) => {
+      const cX = 35 + i * ((W - 50) / Math.max(1, data.length - 1));
+      const yO = py(d.open); const yC = py(d.close);
+      const yH = py(d.hi); const yL = py(d.lo);
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(cX, yH); ctx.lineTo(cX, yL); ctx.stroke();
+      ctx.fillStyle = d.close >= d.open ? 'rgba(72,187,120,0.1)' : 'rgba(245,101,101,0.1)';
+      ctx.fillRect(cX - cW/2, Math.min(yO, yC), cW, Math.max(Math.abs(yO-yC), 1));
+    });
+  }
+  // IB
+  ctx.fillStyle=VIZ_COLORS.ib;
+  ctx.fillRect(0,py(ibH)-rH/2,W,(py(ibL)+rH/2)-(py(ibH)-rH/2));
+  // Tails
+  if(stLo<pMax){ctx.fillStyle=VIZ_COLORS.tail;ctx.fillRect(0,py(pMax)-rH/2,W,(py(stLo)+rH/2)-(py(pMax)-rH/2));}
+  if(btHi>pMin){ctx.fillStyle=VIZ_COLORS.tail;ctx.fillRect(0,py(btHi)-rH/2,W,(py(pMin)+rH/2)-(py(btHi)-rH/2));}
+  // POC line
+  ctx.strokeStyle=VIZ_COLORS.poc; ctx.lineWidth=1.5; ctx.setLineDash([3,2]);
+  ctx.beginPath(); ctx.moveTo(0,py(poc)); ctx.lineTo(W,py(poc)); ctx.stroke(); ctx.setLineDash([]);
+  // IB borders
+  ctx.strokeStyle=VIZ_COLORS.ibBorder; ctx.lineWidth=1;
+  [[ibH,-1],[ibL,1]].forEach(([p,d])=>{const y=py(p)+d*rH/2;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();});
+  // Labels
+  ctx.font='bold 7px JetBrains Mono,monospace';
+  ctx.fillStyle='#7c6fff'; ctx.fillText('VAH',W-22,py(vah)-rH/2+7); ctx.fillText('VAL',W-22,py(val)+rH/2-1);
+  ctx.fillStyle='#48bb78'; ctx.fillText('IBH',W-42,py(ibH)-rH/2+7); ctx.fillText('IBL',W-42,py(ibL)+rH/2-1);
+  ctx.fillStyle=VIZ_COLORS.poc; ctx.fillText('POC',W-62,py(poc)+3);
+  // Letters — scaled to row height
+  ctx.font=`bold ${letterSz}px JetBrains Mono,monospace`;
+  for(let price=pMin;price<=pMax;price++){
+    rows[price].forEach((ltr,i)=>{
+      const pi=VIZ_PERIODS.indexOf(ltr);
+      ctx.fillStyle=price===poc?VIZ_COLORS.poc:VIZ_COLORS.letters[pi%VIZ_COLORS.letters.length];
+      ctx.shadowColor=price===poc?'#ffd70060':'transparent'; ctx.shadowBlur=price===poc?3:0;
+      ctx.fillText(ltr, i*(cellW+1), py(price)+letterSz/2);
+    });
+  }
+  ctx.shadowBlur=0;
+}
+
+function vizDrawVP(canvas, prof) {
+  const ctx=canvas.getContext('2d');
+  const {volume,pMin,pMax,vpPoc,vpVah,vpVal}=prof;
+  const count=pMax-pMin+1, W=canvas.width, H=canvas.height;
+  const rH=Math.floor(H/count);
+  const maxV=Math.max(...Object.values(volume));
+  function py(p){return H-(p-pMin)*rH;}
+  ctx.fillStyle='#0a0c12'; ctx.fillRect(0,0,W,H);
+  // VA bg
+  ctx.fillStyle='rgba(108,99,255,0.1)';
+  ctx.fillRect(0,py(vpVah),W,py(vpVal)+rH-py(vpVah));
+  ctx.strokeStyle='rgba(108,99,255,0.4)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+  ctx.strokeRect(0,py(vpVah),W,py(vpVal)+rH-py(vpVah)); ctx.setLineDash([]);
+  // Bars
+  for(let price=pMin;price<=pMax;price++){
+    const vol=volume[price]||0;
+    if(vol===0){continue;}
+    const barW=Math.max(1,Math.round((vol/maxV)*(W-4)));
+    const y=py(price), isLVN=barW<(W-4)*0.18;
+    let g;
+    if(price===vpPoc){g=ctx.createLinearGradient(0,0,barW,0);g.addColorStop(0,'rgba(255,215,0,0.9)');g.addColorStop(1,'rgba(255,215,0,0.2)');}
+    else if(price>=vpVal&&price<=vpVah){g=ctx.createLinearGradient(0,0,barW,0);g.addColorStop(0,'rgba(108,99,255,0.85)');g.addColorStop(1,'rgba(108,99,255,0.2)');}
+    else if(isLVN){g=ctx.createLinearGradient(0,0,barW,0);g.addColorStop(0,'rgba(108,99,255,0.22)');g.addColorStop(1,'rgba(108,99,255,0.05)');}
+    else{g=ctx.createLinearGradient(0,0,barW,0);g.addColorStop(0,'rgba(108,99,255,0.55)');g.addColorStop(1,'rgba(108,99,255,0.12)');}
+    ctx.fillStyle=g; ctx.fillRect(0,y,barW,Math.max(1,rH-1));
+    if(price===vpPoc){ctx.shadowColor='rgba(255,215,0,0.4)';ctx.shadowBlur=6;ctx.fillStyle='rgba(255,215,0,0.9)';ctx.fillRect(0,y,barW,Math.max(1,rH-1));ctx.shadowBlur=0;}
+  }
+  // VPOC line
+  const pY=py(vpPoc)+rH/2;
+  ctx.strokeStyle=VIZ_COLORS.poc; ctx.lineWidth=1.5; ctx.setLineDash([3,2]);
+  ctx.beginPath(); ctx.moveTo(0,pY); ctx.lineTo(W,pY); ctx.stroke(); ctx.setLineDash([]);
+  // Labels
+  ctx.font='bold 7px JetBrains Mono,monospace';
+  ctx.fillStyle='#7c6fff'; ctx.fillText('VAH',2,py(vpVah)+7); ctx.fillText('VAL',2,py(vpVal)+rH-1);
+  ctx.fillStyle=VIZ_COLORS.poc; ctx.fillText('VPOC',2,pY-2);
+}
+
+function vizBuildAxis(el, prof, rH) {
+  const {pMin,pMax,poc,vah,val,ibH,ibL}=prof;
+  el.innerHTML=''; el.style.height='auto';
+  const every=pMax>1000?10:5;
+  for(let p=pMax;p>=pMin;p--){
+    const d=document.createElement('div');
+    d.className='viz-price-lbl'; d.style.height=rH+'px'; d.style.minHeight=rH+'px';
+    const isKey=p===poc||p===vah||p===val||p===ibH||p===ibL;
+    if(isKey||p%every===0) d.textContent=p;
+    if(p===poc)d.classList.add('poc'); else if(p===vah)d.classList.add('vah');
+    else if(p===val)d.classList.add('val'); else if(p===ibH)d.classList.add('ibh');
+    else if(p===ibL)d.classList.add('ibl');
+    el.appendChild(d);
+  }
+}
+
+function vizCreateProfileBlock(data, forcedMin, forcedMax, canvasH, tpoW, vpW) {
+  const prof=vizBuildProfile(data, forcedMin, forcedMax);
+  const count=prof.pMax-prof.pMin+1;
+  const rH=Math.floor(canvasH/count);
+  const wrap=document.createElement('div');
+  wrap.className='viz-profile';
+  // charts row
+  const chartsRow=document.createElement('div');
+  chartsRow.className='viz-charts';
+  // axis
+  const axisEl=document.createElement('div');
+  axisEl.className='viz-price-axis';
+  // tpo col
+  const tpoCol=document.createElement('div'); tpoCol.style.display='flex'; tpoCol.style.flexDirection='column';
+  const tpoHdr=document.createElement('div'); tpoHdr.className='viz-col-hdr'; tpoHdr.textContent='TPO';
+  const tpoCanvas=document.createElement('canvas'); tpoCanvas.width=tpoW; tpoCanvas.height=canvasH;
+  tpoCol.appendChild(tpoHdr); tpoCol.appendChild(tpoCanvas);
+  // divider
+  const div=document.createElement('div'); div.className='viz-divider';
+  // vp col
+  const vpCol=document.createElement('div'); vpCol.style.display='flex'; vpCol.style.flexDirection='column';
+  const vpHdr=document.createElement('div'); vpHdr.className='viz-col-hdr'; vpHdr.textContent='VP';
+  const vpCanvas=document.createElement('canvas'); vpCanvas.width=vpW; vpCanvas.height=canvasH;
+  vpCol.appendChild(vpHdr); vpCol.appendChild(vpCanvas);
+  chartsRow.appendChild(axisEl); chartsRow.appendChild(tpoCol); chartsRow.appendChild(div); chartsRow.appendChild(vpCol);
+  wrap.appendChild(chartsRow);
+  // Draw
+  setTimeout(()=>{
+    vizDrawTPO(tpoCanvas, prof);
+    vizDrawVP(vpCanvas, prof);
+    vizBuildAxis(axisEl, prof, rH);
+  }, 0);
+  return {el:wrap, prof};
+}
+
+// ── VIZ RENDERERS ────────────────────────
+function renderInsideDayViz() {
+  // Gold prices from the exact example
+  // Yesterday: 2000-2020 (VA 2005-2015)
+  // Today (Inside Day): stays entirely within 2005-2015
+  const FMIN=1998, FMAX=2022, H=440, TPO_W=210, VP_W=90;
+  const ydayData=[
+    {period:'A',lo:2010,hi:2015},{period:'B',lo:2008,hi:2016},
+    {period:'C',lo:2006,hi:2016},{period:'D',lo:2005,hi:2015},
+    {period:'E',lo:2005,hi:2015},{period:'F',lo:2005,hi:2015},
+    {period:'G',lo:2006,hi:2015},{period:'H',lo:2005,hi:2015},
+    {period:'I',lo:2005,hi:2015},{period:'J',lo:2005,hi:2016},
+    {period:'K',lo:2005,hi:2014},{period:'L',lo:2000,hi:2014}, // buying tail down to 2000
+    {period:'M',lo:2005,hi:2020}, // selling tail up to 2020
+  ];
+  const todayData=[
+    {period:'A',lo:2010,hi:2013},{period:'B',lo:2009,hi:2014},
+    {period:'C',lo:2008,hi:2014},{period:'D',lo:2007,hi:2013},
+    {period:'E',lo:2007,hi:2013},{period:'F',lo:2006,hi:2012},
+    {period:'G',lo:2006,hi:2012},{period:'H',lo:2006,hi:2013},
+    {period:'I',lo:2007,hi:2013},{period:'J',lo:2007,hi:2014},
+    {period:'K',lo:2008,hi:2014},{period:'L',lo:2008,hi:2015},
+    {period:'M',lo:2009,hi:2015}, // Stays perfectly between 2005 and 2015
+  ];
+  const container=document.createElement('div'); container.className='viz-container';
+  const title=document.createElement('div'); title.className='viz-title';
+  title.innerHTML='📊 Visual Example — Gold: Inside Day vs Prior Day';
+  container.appendChild(title);
+  const row=document.createElement('div'); row.className='viz-profiles';
+  // YESTERDAY
+  const ydayWrap=document.createElement('div'); ydayWrap.className='viz-profile';
+  const ydayLbl=document.createElement('div'); ydayLbl.className='viz-profile-label';
+  ydayLbl.style.cssText='background:rgba(108,99,255,0.15);color:#a78bfa;font-size:12px;';
+  ydayLbl.innerHTML='📅 Yesterday &nbsp;<span style="color:#4a5568;font-weight:400">$2000 — $2020</span>';
+  const {el:ydayEl}=vizCreateProfileBlock(ydayData,FMIN,FMAX,H,TPO_W,VP_W);
+  ydayWrap.appendChild(ydayLbl); ydayWrap.appendChild(ydayEl); row.appendChild(ydayWrap);
+  // Connector
+  const conn=document.createElement('div'); conn.className='viz-connector';
+  conn.innerHTML='<div class="viz-connector-arrow" style="font-size:18px;">→</div><div class="viz-connector-label" style="font-size:8px;">INSIDE!</div>';
+  row.appendChild(conn);
+  // TODAY
+  const todayWrap=document.createElement('div'); todayWrap.className='viz-profile';
+  const todayLbl=document.createElement('div'); todayLbl.className='viz-profile-label';
+  todayLbl.style.cssText='background:rgba(72,187,120,0.15);color:#68d391;font-size:12px;';
+  todayLbl.innerHTML='📅 Today (Inside Day) &nbsp;<span style="color:#4a5568;font-weight:400">$2005 — $2015</span>';
+  const {el:todayEl}=vizCreateProfileBlock(todayData,FMIN,FMAX,H,TPO_W,VP_W);
+  todayWrap.appendChild(todayLbl); todayWrap.appendChild(todayEl); row.appendChild(todayWrap);
+  container.appendChild(row);
+  // Legend
+  const leg=document.createElement('div'); leg.className='viz-legend';
+  leg.innerHTML=`
+    <div class="viz-legend-item"><div class="viz-legend-dot" style="background:#ffd700;"></div>POC (Point of Control)</div>
+    <div class="viz-legend-item"><div class="viz-legend-dot" style="background:rgba(108,99,255,0.6);border:1px solid #7c6fff;"></div>Value Area 70%</div>
+    <div class="viz-legend-item"><div class="viz-legend-dot" style="background:rgba(72,187,120,0.5);border:1px solid #48bb78;"></div>Initial Balance (A+B)</div>
+    <div class="viz-legend-item"><div class="viz-legend-dot" style="background:rgba(245,101,101,0.5);"></div>Tail / Single Print</div>
+    <div class="viz-legend-item"><div class="viz-legend-dot" style="background:rgba(108,99,255,0.15);border:1px solid #4a5568;"></div>LVN — Low Volume Node</div>
+  `;
+  container.appendChild(leg);
+  // Callout boxes — use createElement to avoid destroying canvas elements
+  const callouts=document.createElement('div');
+  callouts.style.cssText='display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;';
+  callouts.innerHTML=`
+    <div style="flex:1;min-width:220px;background:rgba(0,212,170,0.07);border:1px solid rgba(0,212,170,0.25);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#00d4aa;margin-bottom:6px;">🎯 What to notice</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">Today's entire range <strong style="color:#e2e8f0">($2005–$2015)</strong> stays entirely inside Yesterday's Value Area <strong style="color:#a78bfa">($2005–$2015)</strong>. VP bars clearly show LVN zones as thin lines — that's where price moved fast. HVN = wide bars = institutional interest.</div>
+    </div>
+    <div style="flex:1;min-width:220px;background:rgba(108,99,255,0.07);border:1px solid rgba(108,99,255,0.2);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#a78bfa;margin-bottom:6px;">🎯 Trader's Perspective</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">Inside days are the <strong style="color:#e2e8f0">calm before the storm</strong>. A professional trader doesn't trade here; they wait. When the breakout occurs above <strong style="color:#f56565">$2020</strong>, the "untraded area" becomes the target. That gap = fast move.</div>
+    </div>
+  `;
+  container.appendChild(callouts);
+  return container;
+}
+
+function renderIBViz() {
+  const FMIN=4000, FMAX=4100, H=440, TPO_W=210, VP_W=90;
+  
+  // Narrow IB: A+B are tight (4045-4055) - 10 pts
+  const narrowData=[
+    {period:'A',lo:4045,hi:4052},{period:'B',lo:4048,hi:4055}, // IB
+    {period:'C',lo:4050,hi:4065},{period:'D',lo:4060,hi:4075},
+    {period:'E',lo:4070,hi:4085},{period:'F',lo:4080,hi:4095},
+    {period:'G',lo:4085,hi:4098},{period:'H',lo:4090,hi:4098},
+    {period:'I',lo:4090,hi:4096},{period:'J',lo:4092,hi:4098},
+  ];
+  
+  // Wide IB: A+B are huge (4020-4080) - 60 pts
+  const wideData=[
+    {period:'A',lo:4020,hi:4060},{period:'B',lo:4040,hi:4080}, // IB
+    {period:'C',lo:4035,hi:4065},{period:'D',lo:4045,hi:4075},
+    {period:'E',lo:4030,hi:4060},{period:'F',lo:4050,hi:4070},
+    {period:'G',lo:4040,hi:4065},{period:'H',lo:4045,hi:4060},
+    {period:'I',lo:4035,hi:4055},{period:'J',lo:4040,hi:4065},
+  ];
+
+  const container=document.createElement('div'); container.className='viz-container';
+  const title=document.createElement('div'); title.className='viz-title';
+  title.innerHTML='📊 Visual Example — Initial Balance (Narrow vs Wide)';
+  container.appendChild(title);
+  
+  const row=document.createElement('div'); row.className='viz-profiles';
+  
+  // NARROW IB
+  const narrowWrap=document.createElement('div'); narrowWrap.className='viz-profile';
+  const narrowLbl=document.createElement('div'); narrowLbl.className='viz-profile-label';
+  narrowLbl.style.cssText='background:rgba(245,101,101,0.15);color:#f56565;font-size:12px;';
+  narrowLbl.innerHTML='📉 NARROW IB (10 Points) &nbsp;<span style="color:#e2e8f0;font-weight:400">Explosion! 💥</span>';
+  const {el:narrowEl}=vizCreateProfileBlock(narrowData,FMIN,FMAX,H,TPO_W,VP_W);
+  narrowWrap.appendChild(narrowLbl); narrowWrap.appendChild(narrowEl); row.appendChild(narrowWrap);
+  
+  // Connector
+  const conn=document.createElement('div'); conn.className='viz-connector';
+  conn.innerHTML='<div class="viz-connector-arrow" style="font-size:18px;">vs</div>';
+  row.appendChild(conn);
+  
+  // WIDE IB
+  const wideWrap=document.createElement('div'); wideWrap.className='viz-profile';
+  const wideLbl=document.createElement('div'); wideLbl.className='viz-profile-label';
+  wideLbl.style.cssText='background:rgba(108,99,255,0.15);color:#a78bfa;font-size:12px;';
+  wideLbl.innerHTML='📏 WIDE IB (60 Points) &nbsp;<span style="color:#e2e8f0;font-weight:400">Exhausted 😴</span>';
+  const {el:wideEl}=vizCreateProfileBlock(wideData,FMIN,FMAX,H,TPO_W,VP_W);
+  wideWrap.appendChild(wideLbl); wideWrap.appendChild(wideEl); row.appendChild(wideWrap);
+  
+  container.appendChild(row);
+
+  // Callouts
+  const callouts=document.createElement('div');
+  callouts.style.cssText='display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;';
+  callouts.innerHTML=`
+    <div style="flex:1;min-width:220px;background:rgba(0,212,170,0.07);border:1px solid rgba(0,212,170,0.25);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#00d4aa;margin-bottom:6px;">🎯 What to notice</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">The <strong>Narrow IB</strong> (left) is only 10 points wide. Notice how price easily breaks out and trends heavily upwards. The <strong>Wide IB</strong> (right) is 60 points wide, consuming all the day's energy — price stays stuck inside the A & B periods all day.</div>
+    </div>
+    <div style="flex:1;min-width:220px;background:rgba(108,99,255,0.07);border:1px solid rgba(108,99,255,0.2);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#a78bfa;margin-bottom:6px;">🎯 Trader's Perspective</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">If the IB is very small, I expect an <strong>explosion</strong> that day. If price breaks above IB and holds, I only look for Longs. If the IB is massive (wide), I assume the market is exhausted and look to fade the edges.</div>
+    </div>
+  `;
+  container.appendChild(callouts);
+  return container;
+}
+
+function renderTailViz() {
+  const FMIN=2000, FMAX=2060, H=440, TPO_W=210, VP_W=90;
+  
+  // Buying Tail: A drops to 2005, then B and onwards move up.
+  const buyingData=[
+    {period:'A',lo:2005,hi:2025}, // Tail 2005-2015
+    {period:'B',lo:2020,hi:2035},
+    {period:'C',lo:2025,hi:2040},
+    {period:'D',lo:2030,hi:2045},
+    {period:'E',lo:2030,hi:2045},
+    {period:'F',lo:2035,hi:2050},
+    {period:'G',lo:2040,hi:2055},
+  ];
+  
+  // Selling Tail: A spikes to 2055, then B and onwards move down.
+  const sellingData=[
+    {period:'A',lo:2035,hi:2055}, // Tail 2045-2055
+    {period:'B',lo:2020,hi:2040},
+    {period:'C',lo:2015,hi:2030},
+    {period:'D',lo:2010,hi:2025},
+    {period:'E',lo:2010,hi:2025},
+    {period:'F',lo:2005,hi:2020},
+    {period:'G',lo:2005,hi:2015},
+  ];
+
+  const container=document.createElement('div'); container.className='viz-container';
+  const title=document.createElement('div'); title.className='viz-title';
+  title.innerHTML='📊 Visual Example — Buying vs Selling Tails';
+  container.appendChild(title);
+  
+  const row=document.createElement('div'); row.className='viz-profiles';
+  
+  // BUYING TAIL
+  const buyingWrap=document.createElement('div'); buyingWrap.className='viz-profile';
+  const buyingLbl=document.createElement('div'); buyingLbl.className='viz-profile-label';
+  buyingLbl.style.cssText='background:rgba(72,187,120,0.15);color:#48bb78;font-size:12px;';
+  buyingLbl.innerHTML='📉 BUYING TAIL (Dip) &nbsp;<span style="color:#e2e8f0;font-weight:400">Rejected by Buyers</span>';
+  const {el:buyingEl}=vizCreateProfileBlock(buyingData,FMIN,FMAX,H,TPO_W,VP_W);
+  buyingWrap.appendChild(buyingLbl); buyingWrap.appendChild(buyingEl); row.appendChild(buyingWrap);
+  
+  // Connector
+  const conn=document.createElement('div'); conn.className='viz-connector';
+  conn.innerHTML='<div class="viz-connector-arrow" style="font-size:18px;">vs</div>';
+  row.appendChild(conn);
+  
+  // SELLING TAIL
+  const sellingWrap=document.createElement('div'); sellingWrap.className='viz-profile';
+  const sellingLbl=document.createElement('div'); sellingLbl.className='viz-profile-label';
+  sellingLbl.style.cssText='background:rgba(245,101,101,0.15);color:#f56565;font-size:12px;';
+  sellingLbl.innerHTML='📈 SELLING TAIL (Peak) &nbsp;<span style="color:#e2e8f0;font-weight:400">Rejected by Sellers</span>';
+  const {el:sellingEl}=vizCreateProfileBlock(sellingData,FMIN,FMAX,H,TPO_W,VP_W);
+  sellingWrap.appendChild(sellingLbl); sellingWrap.appendChild(sellingEl); row.appendChild(sellingWrap);
+  
+  // Add annotations
+  setTimeout(()=>{
+    const rH = Math.floor(H/(FMAX-FMIN+1));
+    
+    // Buying tail arrow
+    const bTpo = buyingEl.querySelector('.viz-charts').children[1];
+    bTpo.style.position = 'relative';
+    const bArrow = document.createElement('div');
+    const bY = H - (2010 - FMIN)*rH; // point at 2010
+    bArrow.style.cssText = `position:absolute; left:25px; top:${bY}px; color:#48bb78; font-size:11px; font-weight:bold; display:flex; align-items:center; gap:6px; background:rgba(10,12,18,0.85); padding:2px 6px; border-radius:4px; border:1px solid #48bb78; z-index:10; white-space:nowrap;`;
+    bArrow.innerHTML = '← Rejected (Buying Tail)';
+    bTpo.appendChild(bArrow);
+    
+    // Selling tail arrow
+    const sTpo = sellingEl.querySelector('.viz-charts').children[1];
+    sTpo.style.position = 'relative';
+    const sArrow = document.createElement('div');
+    const sY = H - (2050 - FMIN)*rH; // point at 2050
+    sArrow.style.cssText = `position:absolute; left:25px; top:${sY}px; color:#f56565; font-size:11px; font-weight:bold; display:flex; align-items:center; gap:6px; background:rgba(10,12,18,0.85); padding:2px 6px; border-radius:4px; border:1px solid #f56565; z-index:10; white-space:nowrap;`;
+    sArrow.innerHTML = '← Rejected (Selling Tail)';
+    sTpo.appendChild(sArrow);
+  }, 100);
+
+  container.appendChild(row);
+
+  // Callouts
+  const callouts=document.createElement('div');
+  callouts.style.cssText='display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;';
+  callouts.innerHTML=`
+    <div style="flex:1;min-width:220px;background:rgba(0,212,170,0.07);border:1px solid rgba(0,212,170,0.25);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#00d4aa;margin-bottom:6px;">🎯 What to notice</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">Price drops/spikes suddenly but recovers within seconds. A long tail of single letters (Single Prints) remains on the extreme. This means <strong>"this is a no-go zone"</strong>. The probability of the movement continuing away from the tail is very high.</div>
+    </div>
+    <div style="flex:1;min-width:220px;background:rgba(108,99,255,0.07);border:1px solid rgba(108,99,255,0.2);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#a78bfa;margin-bottom:6px;">🎯 Trader's Perspective</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">When I see a tail, the day's direction is clear. The tip of the tail is my definitive <strong>Stop Loss level</strong>. Strong buyers/sellers are defending that exact area.</div>
+    </div>
+  `;
+  container.appendChild(callouts);
+  return container;
+}
+
+function renderSinglePrintViz() {
+  const FMIN=3000, FMAX=3100, H=440, TPO_W=210, VP_W=90;
+  
+  // Single Print Magnet: Gap in the middle due to fast D period
+  const spData=[
+    {period:'A',lo:3010,hi:3030}, {period:'B',lo:3010,hi:3035},
+    {period:'C',lo:3015,hi:3035}, {period:'D',lo:3030,hi:3075}, // Fast move creates gap 3036-3069
+    {period:'E',lo:3070,hi:3090}, {period:'F',lo:3075,hi:3095},
+    {period:'G',lo:3070,hi:3090},
+  ];
+  
+  // Weekly Extremes: Ambush points at the edges
+  const weeklyData=[
+    {period:'A',lo:3040,hi:3060}, {period:'B',lo:3030,hi:3070},
+    {period:'C',lo:3050,hi:3080}, {period:'D',lo:3070,hi:3095}, // Hits high
+    {period:'E',lo:3040,hi:3070}, {period:'F',lo:3020,hi:3050}, // Drops to low
+    {period:'G',lo:3010,hi:3030}, // Hits low
+  ];
+
+  const container=document.createElement('div'); container.className='viz-container';
+  const title=document.createElement('div'); title.className='viz-title';
+  title.innerHTML='📊 Visual Example — Single Print Anomaly & Weekly Extremes';
+  container.appendChild(title);
+  
+  const row=document.createElement('div'); row.className='viz-profiles';
+  
+  // SINGLE PRINT
+  const spWrap=document.createElement('div'); spWrap.className='viz-profile';
+  const spLbl=document.createElement('div'); spLbl.className='viz-profile-label';
+  spLbl.style.cssText='background:rgba(251,191,36,0.15);color:#fbbf24;font-size:12px;';
+  spLbl.innerHTML='🧲 SINGLE PRINT (Magnet) &nbsp;<span style="color:#e2e8f0;font-weight:400">Gap will be filled</span>';
+  const {el:spEl}=vizCreateProfileBlock(spData,FMIN,FMAX,H,TPO_W,VP_W);
+  spWrap.appendChild(spLbl); spWrap.appendChild(spEl); row.appendChild(spWrap);
+  
+  // Connector
+  const conn=document.createElement('div'); conn.className='viz-connector';
+  conn.innerHTML='<div class="viz-connector-arrow" style="font-size:18px;">vs</div>';
+  row.appendChild(conn);
+  
+  // WEEKLY EXTREME
+  const weeklyWrap=document.createElement('div'); weeklyWrap.className='viz-profile';
+  const weeklyLbl=document.createElement('div'); weeklyLbl.className='viz-profile-label';
+  weeklyLbl.style.cssText='background:rgba(52,211,153,0.15);color:#34d399;font-size:12px;';
+  weeklyLbl.innerHTML='🏰 WEEKLY EXTREMES &nbsp;<span style="color:#e2e8f0;font-weight:400">Fortress Walls</span>';
+  const {el:weeklyEl, prof}=vizCreateProfileBlock(weeklyData,FMIN,FMAX,H,TPO_W,VP_W);
+  
+  // Inject custom Weekly High/Low labels into axis and Single Print arrow
+  setTimeout(()=>{
+    const rH = Math.floor(H/(FMAX-FMIN+1));
+    
+    // Weekly High/Low
+    const axis = weeklyEl.querySelector('.viz-price-axis');
+    const highY = H - (3100 - FMIN)*rH;
+    const lowY = H - (3000 - FMIN)*rH;
+    
+    const highLine = document.createElement('div');
+    highLine.style.cssText = 'position:absolute; right:0; top:'+(highY-4)+'px; font-weight:bold; color:#f56565; font-size:10px; display:flex; align-items:center; gap:4px;';
+    highLine.innerHTML = 'Weekly HIGH <span style="background:#f56565;height:2px;width:15px;display:inline-block;"></span>';
+    
+    const lowLine = document.createElement('div');
+    lowLine.style.cssText = 'position:absolute; right:0; bottom:0px; font-weight:bold; color:#48bb78; font-size:10px; display:flex; align-items:center; gap:4px;';
+    lowLine.innerHTML = 'Weekly LOW <span style="background:#48bb78;height:2px;width:15px;display:inline-block;"></span>';
+    
+    axis.style.position = 'relative';
+    axis.appendChild(highLine);
+    axis.appendChild(lowLine);
+    
+    // Single Print Arrow
+    const spTpo = spEl.querySelector('.viz-charts').children[1];
+    spTpo.style.position = 'relative';
+    const spArrow = document.createElement('div');
+    const spY = H - (3050 - FMIN)*rH; // point at gap center
+    spArrow.style.cssText = `position:absolute; left:30px; top:${spY}px; color:#fbbf24; font-size:11px; font-weight:bold; display:flex; align-items:center; gap:6px; background:rgba(10,12,18,0.85); padding:2px 6px; border-radius:4px; border:1px solid #fbbf24; z-index:10; white-space:nowrap;`;
+    spArrow.innerHTML = '← Gap / Single Prints (Magnet)';
+    spTpo.appendChild(spArrow);
+  }, 100);
+
+  weeklyWrap.appendChild(weeklyLbl); weeklyWrap.appendChild(weeklyEl); row.appendChild(weeklyWrap);
+  
+  container.appendChild(row);
+
+  // Callouts
+  const callouts=document.createElement('div');
+  callouts.style.cssText='display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;';
+  callouts.innerHTML=`
+    <div style="flex:1;min-width:220px;background:rgba(0,212,170,0.07);border:1px solid rgba(0,212,170,0.25);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#00d4aa;margin-bottom:6px;">🎯 What to notice</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">The <strong>Single Print</strong> (left) shows an empty gap where price moved too fast. This area acts like a magnet for future price action. The <strong>Weekly Extremes</strong> (right) show price rejecting sharply off major institutional borders.</div>
+    </div>
+    <div style="flex:1;min-width:220px;background:rgba(108,99,255,0.07);border:1px solid rgba(108,99,255,0.2);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#a78bfa;margin-bottom:6px;">🎯 Trader's Perspective</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">I Take Profit when approaching the Weekly High/Low. These are institutional <strong>ambush points</strong>. If price reverses from the peak, I expect a sharp drop straight down to fill the single print gap below.</div>
+    </div>
+  `;
+  container.appendChild(callouts);
+  return container;
+}
+
+function renderNonTrendDayViz() {
+  const FMIN=3900, FMAX=4000, H=440, TPO_W=230, VP_W=100;
+  
+  // Non-Trend Day: Wide IB (3920-3980) and no extension
+  const data=[
+    {period:'A',lo:3920,hi:3970},{period:'B',lo:3930,hi:3980}, // IB
+    {period:'C',lo:3935,hi:3965},{period:'D',lo:3940,hi:3975},
+    {period:'E',lo:3925,hi:3960},{period:'F',lo:3930,hi:3970},
+    {period:'G',lo:3945,hi:3975},{period:'H',lo:3920,hi:3955},
+    {period:'I',lo:3930,hi:3965},{period:'J',lo:3940,hi:3980},
+    {period:'K',lo:3925,hi:3960},{period:'L',lo:3935,hi:3975},
+    {period:'M',lo:3940,hi:3965},
+  ];
+
+  const container=document.createElement('div'); container.className='viz-container';
+  const title=document.createElement('div'); title.className='viz-title';
+  title.innerHTML='📊 Visual Example — Non-Trend Day (Wide IB)';
+  container.appendChild(title);
+  
+  const row=document.createElement('div'); row.className='viz-profiles';
+  
+  const wrap=document.createElement('div'); wrap.className='viz-profile';
+  const lbl=document.createElement('div'); lbl.className='viz-profile-label';
+  lbl.style.cssText='background:rgba(148,163,184,0.15);color:#94a3b8;font-size:12px;';
+  lbl.innerHTML='😴 NON-TREND DAY &nbsp;<span style="color:#e2e8f0;font-weight:400">Wide IB (60 ticks), No Extension</span>';
+  const {el:vizEl}=vizCreateProfileBlock(data,FMIN,FMAX,H,TPO_W,VP_W);
+  wrap.appendChild(lbl); wrap.appendChild(vizEl); row.appendChild(wrap);
+  
+  container.appendChild(row);
+
+  // Add annotations
+  setTimeout(()=>{
+    const rH = Math.floor(H/(FMAX-FMIN+1));
+    const tpo = vizEl.querySelector('.viz-charts').children[1];
+    tpo.style.position = 'relative';
+    
+    // Top boundary
+    const topArrow = document.createElement('div');
+    const topY = H - (3980 - FMIN)*rH;
+    topArrow.style.cssText = `position:absolute; left:40px; top:${topY-10}px; color:#f87171; font-size:11px; font-weight:bold; background:rgba(10,12,18,0.85); padding:2px 6px; border-radius:4px; border:1px solid #f87171; z-index:10; white-space:nowrap;`;
+    topArrow.innerHTML = '← IB High (Resistance)';
+    tpo.appendChild(topArrow);
+    
+    // Bottom boundary
+    const botArrow = document.createElement('div');
+    const botY = H - (3920 - FMIN)*rH;
+    botArrow.style.cssText = `position:absolute; left:40px; top:${botY}px; color:#60a5fa; font-size:11px; font-weight:bold; background:rgba(10,12,18,0.85); padding:2px 6px; border-radius:4px; border:1px solid #60a5fa; z-index:10; white-space:nowrap;`;
+    botArrow.innerHTML = '← IB Low (Support)';
+    tpo.appendChild(botArrow);
+
+    // No extension label
+    const midArrow = document.createElement('div');
+    const midY = H - (3950 - FMIN)*rH;
+    midArrow.style.cssText = `position:absolute; right:10px; top:${midY}px; color:#94a3b8; font-size:11px; font-weight:bold; font-style:italic; border:1px dashed #94a3b8; padding:4px 8px; border-radius:4px; z-index:10;`;
+    midArrow.innerHTML = 'STUCK INSIDE IB';
+    tpo.appendChild(midArrow);
+  }, 100);
+
+  // Callouts
+  const callouts=document.createElement('div');
+  callouts.style.cssText='display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;';
+  callouts.innerHTML=`
+    <div style="flex:1;min-width:220px;background:rgba(148,163,184,0.07);border:1px solid rgba(148,163,184,0.25);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:6px;">🎯 What to notice</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">The <strong>Initial Balance (IB)</strong> is very wide (60 ticks). Market energy was spent early, likely before the cash open. Price fails to extend even one tick above or below the IB high/low.</div>
+    </div>
+    <div style="flex:1;min-width:220px;background:rgba(108,99,255,0.07);border:1px solid rgba(108,99,255,0.2);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#a78bfa;margin-bottom:6px;">🎯 Trader's Perspective</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">Non-trend days are "wait and see" days. There is no institutional conviction. A professional trader avoids opening positions here because there is no <strong>range extension</strong> to profit from.</div>
+    </div>
+  `;
+  container.appendChild(callouts);
+  return container;
+}
+
+function renderNeutralDayViz() {
+  const FMIN=3900, FMAX=4000, H=440, TPO_W=210, VP_W=90;
+  
+  // Neutral Center: Extensions both sides, close in middle
+  const centerData=[
+    {period:'A',lo:3945,hi:3955},{period:'B',lo:3940,hi:3960}, // IB small
+    {period:'C',lo:3960,hi:3975}, // Ext Up
+    {period:'D',lo:3950,hi:3970},
+    {period:'E',lo:3925,hi:3950}, // Ext Down
+    {period:'F',lo:3935,hi:3960},
+    {period:'G',lo:3940,hi:3965},
+    {period:'H',lo:3945,hi:3955},
+    {period:'I',lo:3940,hi:3960},
+    {period:'J',lo:3945,hi:3958},
+  ];
+  
+  // Neutral Extreme: Extensions both sides, close at top/bot
+  const extremeData=[
+    {period:'A',lo:3945,hi:3955},{period:'B',lo:3940,hi:3960}, // IB small
+    {period:'C',lo:3960,hi:3975}, // Ext Up
+    {period:'D',lo:3930,hi:3950}, // Ext Down
+    {period:'E',lo:3940,hi:3965},
+    {period:'F',lo:3950,hi:3970},
+    {period:'G',lo:3960,hi:3980},
+    {period:'H',lo:3970,hi:3985},
+    {period:'I',lo:3975,hi:3990},
+    {period:'J',lo:3980,hi:3995}, // Close at extreme top
+  ];
+
+  const container=document.createElement('div'); container.className='viz-container';
+  const title=document.createElement('div'); title.className='viz-title';
+  title.innerHTML='📊 Visual Example — Neutral Day (Center vs Extreme)';
+  container.appendChild(title);
+  
+  const row=document.createElement('div'); row.className='viz-profiles';
+  
+  // CENTER
+  const centerWrap=document.createElement('div'); centerWrap.className='viz-profile';
+  const centerLbl=document.createElement('div'); centerLbl.className='viz-profile-label';
+  centerLbl.style.cssText='background:rgba(108,99,255,0.15);color:#a78bfa;font-size:12px;';
+  centerLbl.innerHTML='⚖️ NEUTRAL CENTER &nbsp;<span style="color:#e2e8f0;font-weight:400">Close in Middle</span>';
+  const {el:centerEl}=vizCreateProfileBlock(centerData,FMIN,FMAX,H,TPO_W,VP_W);
+  centerWrap.appendChild(centerLbl); centerWrap.appendChild(centerEl); row.appendChild(centerWrap);
+  
+  // Connector
+  const conn=document.createElement('div'); conn.className='viz-connector';
+  conn.innerHTML='<div class="viz-connector-arrow" style="font-size:18px;">vs</div>';
+  row.appendChild(conn);
+  
+  // EXTREME
+  const extremeWrap=document.createElement('div'); extremeWrap.className='viz-profile';
+  const extremeLbl=document.createElement('div'); extremeLbl.className='viz-profile-label';
+  extremeLbl.style.cssText='background:rgba(245,158,11,0.15);color:#f59e0b;font-size:12px;';
+  extremeLbl.innerHTML='🚀 NEUTRAL EXTREME &nbsp;<span style="color:#e2e8f0;font-weight:400">Close at Edge</span>';
+  const {el:extremeEl}=vizCreateProfileBlock(extremeData,FMIN,FMAX,H,TPO_W,VP_W);
+  extremeWrap.appendChild(extremeLbl); extremeWrap.appendChild(extremeEl); row.appendChild(extremeWrap);
+  
+  container.appendChild(row);
+
+  // Add annotations
+  setTimeout(()=>{
+    const rH = Math.floor(H/(FMAX-FMIN+1));
+    
+    // Center annotations
+    const cTpo = centerEl.querySelector('.viz-charts').children[1];
+    cTpo.style.position = 'relative';
+    
+    const cUp = document.createElement('div');
+    cUp.style.cssText = `position:absolute; left:30px; top:${H - (3975 - FMIN)*rH}px; color:#48bb78; font-size:10px; font-weight:bold; background:rgba(10,12,18,0.8); padding:1px 4px; border-radius:3px; border:1px solid #48bb78; z-index:10;`;
+    cUp.innerHTML = '↑ Ext Up';
+    cTpo.appendChild(cUp);
+    
+    const cDown = document.createElement('div');
+    cDown.style.cssText = `position:absolute; left:30px; top:${H - (3925 - FMIN)*rH}px; color:#f56565; font-size:10px; font-weight:bold; background:rgba(10,12,18,0.8); padding:1px 4px; border-radius:3px; border:1px solid #f56565; z-index:10;`;
+    cDown.innerHTML = '↓ Ext Down';
+    cTpo.appendChild(cDown);
+    
+    // Extreme annotations
+    const eTpo = extremeEl.querySelector('.viz-charts').children[1];
+    eTpo.style.position = 'relative';
+    
+    const eClose = document.createElement('div');
+    eClose.style.cssText = `position:absolute; right:10px; top:${H - (3995 - FMIN)*rH}px; color:#f59e0b; font-size:11px; font-weight:bold; background:rgba(10,12,18,0.9); padding:3px 8px; border-radius:4px; border:2px solid #f59e0b; z-index:10; box-shadow:0 0 10px rgba(245,158,11,0.3);`;
+    eClose.innerHTML = '🎯 EXTREME CLOSE!';
+    eTpo.appendChild(eClose);
+  }, 100);
+
+  // Callouts
+  const callouts=document.createElement('div');
+  callouts.style.cssText='display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;';
+  callouts.innerHTML=`
+    <div style="flex:1;min-width:220px;background:rgba(108,99,255,0.07);border:1px solid rgba(108,99,255,0.2);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#a78bfa;margin-bottom:6px;">⚖️ Neutral Center</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">Price extends in both directions but lacks conviction. It returns to the middle to close, showing a balanced but indecisive market. No clear winner.</div>
+    </div>
+    <div style="flex:1;min-width:220px;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#f59e0b;margin-bottom:6px;">🚀 Neutral Extreme</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">The close is at the very top (or bottom). This indicates that although both sides fought, one side <strong>dominated the final hour</strong>. This is a very strong signal for a trend continuation tomorrow.</div>
+    </div>
+  `;
+  container.appendChild(callouts);
+  return container;
+}
+
+function renderNormalVarViz() {
+  const FMIN=3000, FMAX=3100, H=440, TPO_W=210, VP_W=90;
+  
+  // P-Profile: Thin stem at bottom, fat head at top
+  const pData=[
+    {period:'A',lo:3010,hi:3020},{period:'B',lo:3012,hi:3022}, // Narrowed IB
+    {period:'C',lo:3020,hi:3085}, // Extension up
+    {period:'D',lo:3075,hi:3095},{period:'E',lo:3070,hi:3090},
+    {period:'F',lo:3075,hi:3095},{period:'G',lo:3070,hi:3092},
+    {period:'H',lo:3075,hi:3095},{period:'I',lo:3070,hi:3090},
+    {period:'J',lo:3072,hi:3094},{period:'K',lo:3075,hi:3095},
+  ];
+  
+  // b-Profile: Fat bottom, thin stem at top
+  const bData=[
+    {period:'A',lo:3080,hi:3090},{period:'B',lo:3078,hi:3088}, // Narrowed IB
+    {period:'C',lo:3015,hi:3080}, // Extension down
+    {period:'D',lo:3005,hi:3025},{period:'E',lo:3008,hi:3030},
+    {period:'F',lo:3005,hi:3028},{period:'G',lo:3008,hi:3032},
+    {period:'H',lo:3005,hi:3030},{period:'I',lo:3010,hi:3032},
+    {period:'J',lo:3005,hi:3025},{period:'K',lo:3008,hi:3030},
+  ];
+
+  const container=document.createElement('div'); container.className='viz-container';
+  const title=document.createElement('div'); title.className='viz-title';
+  title.innerHTML='📊 Visual Example — Normal Variation (P vs b Profile)';
+  container.appendChild(title);
+  
+  const row=document.createElement('div'); row.className='viz-profiles';
+  
+  // P-PROFILE
+  const pWrap=document.createElement('div'); pWrap.className='viz-profile';
+  const pLbl=document.createElement('div'); pLbl.className='viz-profile-label';
+  pLbl.style.cssText='background:rgba(72,187,120,0.15);color:#48bb78;font-size:12px;';
+  pLbl.innerHTML='🚀 P-PROFILE &nbsp;<span style="color:#e2e8f0;font-weight:400">Short Covering / Rally</span>';
+  const {el:pEl}=vizCreateProfileBlock(pData,FMIN,FMAX,H,TPO_W,VP_W);
+  pWrap.appendChild(pLbl); pWrap.appendChild(pEl); row.appendChild(pWrap);
+  
+  // Connector
+  const conn=document.createElement('div'); conn.className='viz-connector';
+  conn.innerHTML='<div class="viz-connector-arrow" style="font-size:18px;">vs</div>';
+  row.appendChild(conn);
+  
+  // b-PROFILE
+  const bWrap=document.createElement('div'); bWrap.className='viz-profile';
+  const bLbl=document.createElement('div'); bLbl.className='viz-profile-label';
+  bLbl.style.cssText='background:rgba(245,101,101,0.15);color:#f56565;font-size:12px;';
+  bLbl.innerHTML='☄️ b-PROFILE &nbsp;<span style="color:#e2e8f0;font-weight:400">Long Liquidation / Sell-off</span>';
+  const {el:bEl}=vizCreateProfileBlock(bData,FMIN,FMAX,H,TPO_W,VP_W);
+  bWrap.appendChild(bLbl); bWrap.appendChild(bEl); row.appendChild(bWrap);
+  
+  container.appendChild(row);
+
+  // Add annotations
+  setTimeout(()=>{
+    const rH = Math.floor(H/(FMAX-FMIN+1));
+    
+    // P annotations
+    const pTpo = pEl.querySelector('.viz-charts').children[1];
+    pTpo.style.position = 'relative';
+    const pHead = document.createElement('div');
+    pHead.style.cssText = `position:absolute; right:10px; top:${H - (3085 - FMIN)*rH}px; color:#48bb78; font-size:11px; font-weight:bold; background:rgba(10,12,18,0.85); padding:2px 6px; border-radius:4px; border:1px solid #48bb78; z-index:10;`;
+    pHead.innerHTML = 'Value Building at Highs';
+    pTpo.appendChild(pHead);
+    
+    const pStem = document.createElement('div');
+    pStem.style.cssText = `position:absolute; left:20px; top:${H - (3030 - FMIN)*rH}px; color:#94a3b8; font-size:10px; font-style:italic;`;
+    pStem.innerHTML = '← Emotional Stem (Rocket)';
+    pTpo.appendChild(pStem);
+    
+    // b annotations
+    const bTpo = bEl.querySelector('.viz-charts').children[1];
+    bTpo.style.position = 'relative';
+    const bHead = document.createElement('div');
+    bHead.style.cssText = `position:absolute; right:10px; top:${H - (3020 - FMIN)*rH}px; color:#f56565; font-size:11px; font-weight:bold; background:rgba(10,12,18,0.85); padding:2px 6px; border-radius:4px; border:1px solid #f56565; z-index:10;`;
+    bHead.innerHTML = 'Value Building at Lows';
+    bTpo.appendChild(bHead);
+    
+    const bStem = document.createElement('div');
+    bStem.style.cssText = `position:absolute; left:20px; top:${H - (3075 - FMIN)*rH}px; color:#94a3b8; font-size:10px; font-style:italic;`;
+    bStem.innerHTML = '← Emotional Stem (Rocket)';
+    bTpo.appendChild(bStem);
+  }, 100);
+
+  // Callouts
+  const callouts=document.createElement('div');
+  callouts.style.cssText='display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;';
+  callouts.innerHTML=`
+    <div style="flex:1;min-width:220px;background:rgba(0,212,170,0.07);border:1px solid rgba(0,212,170,0.25);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#00d4aa;margin-bottom:6px;">🚀 Rocket Analogy</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">The market "launches hard" (stem), then establishes a horizontal equilibrium (fat head). In a <strong>P-profile</strong>, buyers are in control (rally). In a <strong>b-profile</strong>, sellers are liquidating (sell-off).</div>
+    </div>
+    <div style="flex:1;min-width:220px;background:rgba(108,99,255,0.07);border:1px solid rgba(108,99,255,0.2);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#a78bfa;margin-bottom:6px;">🎯 Trader's Perspective</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">Normal Variation days are trend days with a "pause". The stem is your <strong>emotional zone</strong> — avoid trading inside it. Look for entries when value starts building in the "fat" part of the profile.</div>
+    </div>
+  `;
+  container.appendChild(callouts);
+  return container;
+}
+
+function renderDoubleDistTrendViz() {
+  const FMIN=3000, FMAX=3100, H=440, TPO_W=230, VP_W=100;
+  
+  const data=[
+    {period:'A',lo:3010,hi:3030},{period:'B',lo:3015,hi:3035},
+    {period:'C',lo:3010,hi:3030}, // 1st Floor
+    {period:'D',lo:3030,hi:3080}, // The Stairs (Gap)
+    {period:'E',lo:3075,hi:3095},{period:'F',lo:3070,hi:3090},
+    {period:'G',lo:3075,hi:3095},{period:'H',lo:3072,hi:3092}, // 5th Floor
+  ];
+
+  const container=document.createElement('div'); container.className='viz-container';
+  const title=document.createElement('div'); title.className='viz-title';
+  title.innerHTML='📊 Visual Example — Trend Day (Double Distribution)';
+  container.appendChild(title);
+  
+  const row=document.createElement('div'); row.className='viz-profiles';
+  const wrap=document.createElement('div'); wrap.className='viz-profile';
+  const lbl=document.createElement('div'); lbl.className='viz-profile-label';
+  lbl.style.cssText='background:rgba(59,130,246,0.15);color:#3b82f6;font-size:12px;';
+  lbl.innerHTML='🚀 DOUBLE DISTRIBUTION &nbsp;<span style="color:#e2e8f0;font-weight:400">Jumping from Floor to Floor</span>';
+  const {el:vizEl}=vizCreateProfileBlock(data,FMIN,FMAX,H,TPO_W,VP_W);
+  wrap.appendChild(lbl); wrap.appendChild(vizEl); row.appendChild(wrap);
+  container.appendChild(row);
+
+  setTimeout(()=>{
+    const rH = Math.floor(H/(FMAX-FMIN+1));
+    const tpo = vizEl.querySelector('.viz-charts').children[1];
+    tpo.style.position = 'relative';
+    
+    // 5th Floor
+    const f5 = document.createElement('div');
+    f5.style.cssText = `position:absolute; right:15px; top:${H - (3085 - FMIN)*rH}px; color:#48bb78; font-size:11px; font-weight:bold; background:rgba(10,12,18,0.85); padding:2px 6px; border:1px solid #48bb78; border-radius:4px; z-index:10;`;
+    f5.innerHTML = '5th Floor (New Value)';
+    tpo.appendChild(f5);
+    
+    // Stairs
+    const stairs = document.createElement('div');
+    stairs.style.cssText = `position:absolute; left:35px; top:${H - (3055 - FMIN)*rH}px; color:#fbbf24; font-size:11px; font-weight:bold; background:rgba(10,12,18,0.85); padding:2px 6px; border:1px solid #fbbf24; border-radius:4px; z-index:10;`;
+    stairs.innerHTML = '← The Stairs (Gap / Support)';
+    tpo.appendChild(stairs);
+    
+    // 1st Floor
+    const f1 = document.createElement('div');
+    f1.style.cssText = `position:absolute; right:15px; top:${H - (3020 - FMIN)*rH}px; color:#3b82f6; font-size:11px; font-weight:bold; background:rgba(10,12,18,0.85); padding:2px 6px; border:1px solid #3b82f6; border-radius:4px; z-index:10;`;
+    f1.innerHTML = '1st Floor (Initial Value)';
+    tpo.appendChild(f1);
+  }, 100);
+
+  const callouts=document.createElement('div');
+  callouts.style.cssText='display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;';
+  callouts.innerHTML=`
+    <div style="flex:1;min-width:220px;background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.25);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#3b82f6;margin-bottom:6px;">🏢 Building Analogy</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">Price breaks out from the 1st floor (initial value node), climbs the stairs (gap), and establishes a new 5th floor (second value node). The gap is your protection.</div>
+    </div>
+    <div style="flex:1;min-width:220px;background:rgba(108,99,255,0.07);border:1px solid rgba(108,99,255,0.2);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#a78bfa;margin-bottom:6px;">🎯 Trader's Perspective</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">If price stays above the "stairs", the trend is extremely strong. If it falls back into the stairs, the "filling" process begins and the trend is weakening.</div>
+    </div>
+  `;
+  container.appendChild(callouts);
+  return container;
+}
+
+function renderNormalTrendViz() {
+  const FMIN=3000, FMAX=3100, H=440, TPO_W=230, VP_W=100;
+  
+  const data=[
+    {period:'A',lo:3000,hi:3025},{period:'B',lo:3010,hi:3035},
+    {period:'C',lo:3020,hi:3045},{period:'D',lo:3030,hi:3055},
+    {period:'E',lo:3040,hi:3065},{period:'F',lo:3050,hi:3075},
+    {period:'G',lo:3060,hi:3085},{period:'H',lo:3070,hi:3095},
+    {period:'I',lo:3080,hi:3100},
+  ];
+
+  const container=document.createElement('div'); container.className='viz-container';
+  const title=document.createElement('div'); title.className='viz-title';
+  title.innerHTML='📊 Visual Example — Trend Day (Normal)';
+  container.appendChild(title);
+  
+  const row=document.createElement('div'); row.className='viz-profiles';
+  const wrap=document.createElement('div'); wrap.className='viz-profile';
+  const lbl=document.createElement('div'); lbl.className='viz-profile-label';
+  lbl.style.cssText='background:rgba(16,185,129,0.15);color:#10b981;font-size:12px;';
+  lbl.innerHTML='🏃💨 TREND DAY (Normal) &nbsp;<span style="color:#e2e8f0;font-weight:400">Aggressive Movement</span>';
+  const {el:vizEl}=vizCreateProfileBlock(data,FMIN,FMAX,H,TPO_W,VP_W);
+  wrap.appendChild(lbl); wrap.appendChild(vizEl); row.appendChild(wrap);
+  container.appendChild(row);
+
+  setTimeout(()=>{
+    const rH = Math.floor(H/(FMAX-FMIN+1));
+    const tpo = vizEl.querySelector('.viz-charts').children[1];
+    tpo.style.position = 'relative';
+    
+    const force = document.createElement('div');
+    force.style.cssText = `position:absolute; right:15px; top:${H/2-20}px; color:#10b981; font-size:12px; font-weight:bold; background:rgba(10,12,18,0.9); padding:6px 12px; border:2px solid #10b981; border-radius:6px; z-index:10; box-shadow:0 0 15px rgba(16,185,129,0.4); transform: rotate(-5deg);`;
+    force.innerHTML = '⚡ CONTINUOUS PRESSURE';
+    tpo.appendChild(force);
+    
+    const breakOut = document.createElement('div');
+    breakOut.style.cssText = `position:absolute; left:40px; top:${H - (3040 - FMIN)*rH}px; color:#e2e8f0; font-size:10px; font-style:italic;`;
+    breakOut.innerHTML = '← Smashes through key levels';
+    tpo.appendChild(breakOut);
+  }, 100);
+
+  const callouts=document.createElement('div');
+  callouts.style.cssText='display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;';
+  callouts.innerHTML=`
+    <div style="flex:1;min-width:220px;background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.25);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#10b981;margin-bottom:6px;">🏃💨 Speed Analogy</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">Door is broken, everyone is running one way. Volume is spread everywhere because price never stops to build a significant node. It advances with small pauses.</div>
+    </div>
+    <div style="flex:1;min-width:220px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#ef4444;margin-bottom:6px;">🚨 WARNING</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;"><strong>NEVER FADE THIS.</strong> Thinking "it's gone up too much" is the most expensive mistake. The market has extreme conviction and will crush counter-trend trades.</div>
+    </div>
+  `;
+  container.appendChild(callouts);
+  return container;
+}
+
+function renderLossOfMomentumViz() {
+  const FMIN=3000, FMAX=3060, H=440, TPO_W=230, VP_W=100;
+  // Rounded top
+  const data=[
+    {period:'A',lo:3000,hi:3020},{period:'B',lo:3015,hi:3035},
+    {period:'C',lo:3025,hi:3045},{period:'D',lo:3035,hi:3052},
+    {period:'E',lo:3045,hi:3055},{period:'F',lo:3050,hi:3055}, // Peak
+    {period:'G',lo:3045,hi:3055},{period:'H',lo:3035,hi:3050},
+    {period:'I',lo:3020,hi:3040},{period:'J',lo:3010,hi:3030},
+  ];
+
+  const container=document.createElement('div'); container.className='viz-container';
+  const title=document.createElement('div'); title.className='viz-title';
+  title.innerHTML='📊 Visual Example — Reversal Type 1: Loss of Momentum';
+  container.appendChild(title);
+  
+  const row=document.createElement('div'); row.className='viz-profiles';
+  const wrap=document.createElement('div'); wrap.className='viz-profile';
+  const lbl=document.createElement('div'); lbl.className='viz-profile-label';
+  lbl.style.cssText='background:rgba(148,163,184,0.15);color:#94a3b8;font-size:12px;';
+  lbl.innerHTML='🐢 LOSS OF MOMENTUM &nbsp;<span style="color:#e2e8f0;font-weight:400">Slow U-Turn</span>';
+  const {el:vizEl}=vizCreateProfileBlock(data,FMIN,FMAX,H,TPO_W,VP_W);
+  wrap.appendChild(lbl); wrap.appendChild(vizEl); row.appendChild(wrap);
+  container.appendChild(row);
+
+  setTimeout(()=>{
+    const rH = Math.floor(H/(FMAX-FMIN+1));
+    const tpo = vizEl.querySelector('.viz-charts').children[1];
+    tpo.style.position = 'relative';
+    
+    const peak = document.createElement('div');
+    peak.style.cssText = `position:absolute; right:15px; top:${H - (3055 - FMIN)*rH}px; color:#94a3b8; font-size:11px; font-weight:bold; background:rgba(10,12,18,0.85); padding:2px 6px; border:1px solid #94a3b8; border-radius:4px; z-index:10;`;
+    peak.innerHTML = '← Price spins its wheels';
+    tpo.appendChild(peak);
+    
+    const arc = document.createElement('div');
+    arc.style.cssText = `position:absolute; left:40px; top:${H/2-20}px; border-left:2px dashed #94a3b8; border-top:2px dashed #94a3b8; width:50px; height:50px; border-top-left-radius:50px; z-index:5; opacity:0.4;`;
+    tpo.appendChild(arc);
+  }, 100);
+
+  const callouts=document.createElement('div');
+  callouts.style.cssText='display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;';
+  callouts.innerHTML=`
+    <div style="flex:1;min-width:220px;background:rgba(148,163,184,0.07);border:1px solid rgba(148,163,184,0.25);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:6px;">🚢 Ship Analogy</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">U-turn is slow, traces a wide arc. Volume dries up as everyone who wanted to buy has already bought. The market slowly rolls over.</div>
+    </div>
+  `;
+  container.appendChild(callouts);
+  return container;
+}
+
+function renderExcessViz() {
+  const FMIN=3000, FMAX=3060, H=440, TPO_W=230, VP_W=100;
+  // Sharp peak with tail
+  const data=[
+    {period:'A',lo:3000,hi:3020},{period:'B',lo:3010,hi:3030},
+    {period:'C',lo:3030,hi:3055}, // Fast move up
+    {period:'D',lo:3058,hi:3060}, // Tiny peak (Tail)
+    {period:'E',lo:3015,hi:3035}, // Sharp snap back
+    {period:'F',lo:3010,hi:3030},
+  ];
+
+  const container=document.createElement('div'); container.className='viz-container';
+  const title=document.createElement('div'); title.className='viz-title';
+  title.innerHTML='📊 Visual Example — Reversal Type 2: Excess (V-Reversal)';
+  container.appendChild(title);
+  
+  const row=document.createElement('div'); row.className='viz-profiles';
+  const wrap=document.createElement('div'); wrap.className='viz-profile';
+  const lbl=document.createElement('div'); lbl.className='viz-profile-label';
+  lbl.style.cssText='background:rgba(239,68,68,0.15);color:#ef4444;font-size:12px;';
+  lbl.innerHTML='🔥 EXCESS REVERSAL &nbsp;<span style="color:#e2e8f0;font-weight:400">Touching a Hot Stove</span>';
+  const {el:vizEl}=vizCreateProfileBlock(data,FMIN,FMAX,H,TPO_W,VP_W);
+  wrap.appendChild(lbl); wrap.appendChild(vizEl); row.appendChild(wrap);
+  container.appendChild(row);
+
+  setTimeout(()=>{
+    const rH = Math.floor(H/(FMAX-FMIN+1));
+    const tpo = vizEl.querySelector('.viz-charts').children[1];
+    tpo.style.position = 'relative';
+    
+    const stove = document.createElement('div');
+    stove.style.cssText = `position:absolute; left:30px; top:${H - (3060 - FMIN)*rH}px; color:#ef4444; font-size:11px; font-weight:bold; background:rgba(10,12,18,0.85); padding:2px 6px; border:1px solid #ef4444; border-radius:4px; z-index:10; white-space:nowrap;`;
+    stove.innerHTML = '← Rejected (Hot Stove!)';
+    tpo.appendChild(stove);
+    
+    const vShape = document.createElement('div');
+    vShape.style.cssText = `position:absolute; right:20px; top:${H/2}px; color:#ef4444; font-size:24px; font-weight:bold; opacity:0.3;`;
+    vShape.innerHTML = 'V';
+    tpo.appendChild(vShape);
+  }, 100);
+
+  const callouts=document.createElement('div');
+  callouts.style.cssText='display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;';
+  callouts.innerHTML=`
+    <div style="flex:1;min-width:220px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#ef4444;margin-bottom:6px;">🏹 Bow Analogy</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">The further you pull back, the faster it returns. Price hits an extreme with zero interest and snaps back instantly, leaving a long tail.</div>
+    </div>
+  `;
+  container.appendChild(callouts);
+  return container;
+}
+
+function renderAggressiveReversalViz() {
+  const FMIN=3000, FMAX=3060, H=440, TPO_W=230, VP_W=100;
+  // Fast move into a high volume wall
+  const data=[
+    {period:'A',lo:3045,hi:3060},
+    {period:'B',lo:3030,hi:3050}, // Fast drop
+    {period:'C',lo:3015,hi:3025}, // Fast drop
+    {period:'D',lo:3005,hi:3015},{period:'E',lo:3002,hi:3018}, // THE WALL (Massive overlap)
+    {period:'F',lo:3004,hi:3016},{period:'G',lo:3005,hi:3015},
+    {period:'H',lo:3003,hi:3017},{period:'I',lo:3025,hi:3045}, // Aggressive bounce
+  ];
+
+  const container=document.createElement('div'); container.className='viz-container';
+  const title=document.createElement('div'); title.className='viz-title';
+  title.innerHTML='📊 Visual Example — Reversal Type 3: Aggressive';
+  container.appendChild(title);
+  
+  const row=document.createElement('div'); row.className='viz-profiles';
+  const wrap=document.createElement('div'); wrap.className='viz-profile';
+  const lbl=document.createElement('div'); lbl.className='viz-profile-label';
+  lbl.style.cssText='background:rgba(244,63,94,0.15);color:#f43f5e;font-size:12px;';
+  lbl.innerHTML='💥 AGGRESSIVE REVERSAL &nbsp;<span style="color:#e2e8f0;font-weight:400">Hitting a Concrete Wall</span>';
+  const {el:vizEl}=vizCreateProfileBlock(data,FMIN,FMAX,H,TPO_W,VP_W);
+  wrap.appendChild(lbl); wrap.appendChild(vizEl); row.appendChild(wrap);
+  container.appendChild(row);
+
+  setTimeout(()=>{
+    const rH = Math.floor(H/(FMAX-FMIN+1));
+    const tpo = vizEl.querySelector('.viz-charts').children[1];
+    tpo.style.position = 'relative';
+    
+    const wall = document.createElement('div');
+    wall.style.cssText = `position:absolute; right:15px; top:${H - (3010 - FMIN)*rH}px; color:#f43f5e; font-size:11px; font-weight:bold; background:rgba(10,12,18,0.9); padding:4px 10px; border:2px solid #f43f5e; border-radius:4px; z-index:10; box-shadow:0 0 15px rgba(244,63,94,0.4);`;
+    wall.innerHTML = '⚡ INSTITUTIONAL WALL';
+    tpo.appendChild(wall);
+    
+    const crash = document.createElement('div');
+    crash.style.cssText = `position:absolute; left:30px; top:${H - (3015 - FMIN)*rH - 20}px; color:#fbbf24; font-size:14px;`;
+    crash.innerHTML = '💥 CRASH!';
+    tpo.appendChild(crash);
+  }, 100);
+
+  const callouts=document.createElement('div');
+  callouts.style.cssText='display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;';
+  callouts.innerHTML=`
+    <div style="flex:1;min-width:220px;background:rgba(244,63,94,0.07);border:1px solid rgba(244,63,94,0.25);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#f43f5e;margin-bottom:6px;">🧱 Wall Analogy</div>
+      <div style="font-size:12px;color:#718096;line-height:1.65;">Volatility + Volume + Overpricing. Price crashes into a massive block of institutional orders and bounces back with extreme force. Highest R/R opportunity.</div>
+    </div>
+  `;
+  container.appendChild(callouts);
+  return container;
+}
+
+
+// ── INJECTION MAP ─────────────────────────
+const VIZ_MAP = {
+  'Part 1.md': [
+    { match: 'Inside Profile', renderer: renderInsideDayViz },
+    { match: 'Initial Balance — IB', renderer: renderIBViz },
+    { match: 'Buying & Selling Tails', renderer: renderTailViz },
+    { match: 'Single Print Anomaly', renderer: renderSinglePrintViz },
+    { match: 'Non-Trend Day', renderer: renderNonTrendDayViz },
+    { match: 'Neutral Day — Center', renderer: renderNeutralDayViz },
+    { match: 'Neutral Day — Extreme', renderer: renderNeutralDayViz },
+    { match: 'Normal Variation', renderer: renderNormalVarViz },
+    { match: 'Trend Day — Double Distribution', renderer: renderDoubleDistTrendViz },
+    { match: 'Trend Day — Normal', renderer: renderNormalTrendViz },
+    { match: 'Type 1: Loss of Momentum', renderer: renderLossOfMomentumViz },
+    { match: 'Type 2: Excess', renderer: renderExcessViz },
+    { match: 'Type 3: Aggressive Reversal', renderer: renderAggressiveReversalViz },
+  ],
+};
+
+function injectVisualizations(filename) {
+  const map = VIZ_MAP[filename];
+  if (!map) return;
+  const body = document.querySelector('.md-body');
+  if (!body) return;
+  const headings = body.querySelectorAll('h1, h2, h3');
+  headings.forEach(h => {
+    const txt = h.textContent || '';
+    map.forEach(entry => {
+      if (!txt.includes(entry.match)) return;
+      // Find the next <hr> or next heading sibling to insert before
+      let el = h;
+      let insertBefore = null;
+      while (el.nextElementSibling) {
+        el = el.nextElementSibling;
+        // Stop at next heading or horizontal rule
+        if (/^H[1-6]$/.test(el.tagName) || el.tagName === 'HR') { 
+          insertBefore = el; 
+          break; 
+        }
+      }
+      const vizEl = entry.renderer();
+      if (insertBefore) body.insertBefore(vizEl, insertBefore);
+      else body.appendChild(vizEl);
+    });
+  });
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' && currentIndex < files.length - 1) loadChapter(currentIndex + 1);
+  if (e.key === 'ArrowLeft' && currentIndex > 0) loadChapter(currentIndex - 1);
+});
+
+// Init
+marked.setOptions({ breaks: true, gfm: true });
+buildNav();
+</script>
+</body>
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Profile + Volume Profile — Demo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0c12;color:#e2e8f0;font-family:'Inter',sans-serif;min-height:100vh;padding:36px 20px;}
+h1{text-align:center;font-size:1.9rem;font-weight:800;background:linear-gradient(135deg,#7c6fff,#00d4aa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.subtitle{text-align:center;color:#4a5568;font-size:13px;margin-bottom:36px;}
+
+.profiles-row{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;max-width:1400px;margin:0 auto 40px;}
+
+.profile-card{background:#13161e;border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:14px;}
+.profile-title{font-size:15px;font-weight:700;color:#fff;}
+.profile-subtitle{font-size:11px;color:#4a5568;margin-top:3px;}
+
+/* Charts row: price axis + TPO + divider + VP */
+.charts-row{display:flex;align-items:stretch;gap:0;}
+
+.price-axis{display:flex;flex-direction:column-reverse;padding-right:6px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#2d3748;min-width:44px;text-align:right;}
+.price-label{display:flex;align-items:center;justify-content:flex-end;}
+.price-label.poc{color:#ffd700;font-weight:700;}
+.price-label.vah{color:#7c6fff;}
+.price-label.val{color:#7c6fff;}
+.price-label.ibh{color:#48bb78;}
+.price-label.ibl{color:#48bb78;}
+
+.chart-divider{width:1px;background:rgba(255,255,255,0.06);margin:0 8px;align-self:stretch;}
+
+/* column headers */
+.col-header{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#4a5568;text-align:center;margin-bottom:6px;}
+
+.chart-col{display:flex;flex-direction:column;}
+
+/* stats */
+.stats-row{display:flex;gap:8px;flex-wrap:wrap;}
+.stat{background:#0d0f14;border:1px solid rgba(255,255,255,0.06);border-radius:9px;padding:8px 12px;flex:1;min-width:72px;}
+.stat-label{font-size:9px;color:#4a5568;text-transform:uppercase;letter-spacing:.5px;}
+.stat-value{font-size:13px;font-weight:700;color:#e2e8f0;font-family:'JetBrains Mono',monospace;margin-top:2px;}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:8px;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:#718096;}
+.legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+
+/* info */
+.info-section{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;}
+.info-card{background:#13161e;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:18px;}
+.info-card h3{font-size:13px;font-weight:700;margin-bottom:8px;}
+.info-card p{font-size:12px;color:#718096;line-height:1.65;}
+.tag{display:inline-block;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;margin-bottom:5px;}
+</style>
+</head>
+<body>
+
+<h1>Market Profile + Volume Profile</h1>
+<p class="subtitle">TPO Chart (left) • Volume Profile (right) • Side by Side • Dark Theme</p>
+
+<div class="profiles-row" id="profiles-row"></div>
+
+<div class="info-section">
+  <div class="info-card">
+    <span class="tag" style="background:rgba(255,215,0,0.15);color:#ffd700;">POC</span>
+    <h3 style="color:#ffd700;">Point of Control</h3>
+    <p>Price with most TPO letters <em>and</em> highest volume. Gold bar/line on both charts. Market's fairest price — strong magnet for return.</p>
+  </div>
+  <div class="info-card">
+    <span class="tag" style="background:rgba(108,99,255,0.15);color:#a78bfa;">VALUE AREA</span>
+    <h3 style="color:#a78bfa;">Value Area (VAH / VAL)</h3>
+    <p>Contains 70% of all TPOs and 70% of volume. Purple highlight on both charts. Price outside VA = "out of value" → expect rejection or return.</p>
+  </div>
+  <div class="info-card">
+    <span class="tag" style="background:rgba(72,187,120,0.15);color:#68d391;">IB</span>
+    <h3 style="color:#48bb78;">Initial Balance (A+B)</h3>
+    <p>First 60 minutes. Green zone on TPO. Wide IB = market already moved, no extension likely. Narrow IB = explosive day ahead.</p>
+  </div>
+  <div class="info-card">
+    <span class="tag" style="background:rgba(245,101,101,0.15);color:#fc8181;">TAIL</span>
+    <h3 style="color:#f56565;">Buying / Selling Tail</h3>
+    <p>Single-letter price extremes. Red zone. Price was rejected instantly. Tip of tail = your stop loss. VP shows very thin bar here (low volume).</p>
+  </div>
+  <div class="info-card">
+    <span class="tag" style="background:rgba(0,212,170,0.15);color:#4fd1c5;">HVN / LVN</span>
+    <h3 style="color:#00d4aa;">High / Low Volume Nodes</h3>
+    <p>VP exclusive. HVN = wide bar = support/resistance. LVN = thin bar = price sliced through fast = same as single print in TPO.</p>
+  </div>
+  <div class="info-card">
+    <span class="tag" style="background:rgba(246,173,85,0.15);color:#f6ad55;">TPO vs VP</span>
+    <h3 style="color:#f6ad55;">Why Use Both?</h3>
+    <p>TPO shows <em>time</em> at price. VP shows <em>actual volume</em> at price. Together they confirm: is this level important by time AND by money?</p>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────
+const CANVAS_H   = 480;
+const TPO_W      = 260;
+const VP_W       = 140;
+const PERIODS    = 'ABCDEFGHIJKLMN';
+const LETTER_SZ  = 10;
+const CELL_W     = 13;
+
+const COLORS = {
+  va:       'rgba(108,99,255,0.18)',
+  vaBorder: 'rgba(108,99,255,0.55)',
+  poc:      '#ffd700',
+  ib:       'rgba(72,187,120,0.13)',
+  ibBorder: 'rgba(72,187,120,0.55)',
+  tail:     'rgba(245,101,101,0.18)',
+  letters:  ['#7c6fff','#5eead4','#fbbf24','#f87171','#a78bfa','#34d399',
+             '#60a5fa','#f472b6','#fb923c','#a3e635','#38bdf8','#e879f9','#facc15','#4ade80'],
+  vpBar:    'rgba(108,99,255,0.55)',
+  vpPOC:    '#ffd700',
+  vpVA:     'rgba(108,99,255,0.75)',
+  vpLVN:    'rgba(108,99,255,0.2)',
+};
+
+// ── BUILD PROFILE ─────────────────────────────────
+function buildProfile(periodsData) {
+  const allPrices = periodsData.flatMap(p=>{const a=[];for(let v=p.lo;v<=p.hi;v++)a.push(v);return a;});
+  const pMin = Math.min(...allPrices);
+  const pMax = Math.max(...allPrices);
+
+  const rows = {};
+  for(let p=pMin;p<=pMax;p++) rows[p]=[];
+  periodsData.forEach(pd=>{
+    for(let p=pd.lo;p<=pd.hi;p++) rows[p].push(pd.period);
+  });
+
+  // POC (TPO)
+  let poc=pMin, maxC=0;
+  for(let p=pMin;p<=pMax;p++) if(rows[p].length>maxC){maxC=rows[p].length;poc=p;}
+
+  // Value Area 70%
+  const total=Object.values(rows).reduce((s,v)=>s+v.length,0);
+  const target=Math.floor(total*0.7);
+  let vaCount=rows[poc].length, vah=poc, val=poc;
+  while(vaCount<target){
+    const up  = vah<pMax ? rows[vah+1].length : 0;
+    const dn  = val>pMin ? rows[val-1].length : 0;
+    if(up>=dn && vah<pMax){vah++;vaCount+=rows[vah].length;}
+    else if(val>pMin){val--;vaCount+=rows[val].length;}
+    else break;
+  }
+
+  // IB
+  const ibP = periodsData.filter(p=>p.period==='A'||p.period==='B');
+  const ibH = ibP.length ? Math.max(...ibP.map(p=>p.hi)) : pMax;
+  const ibL = ibP.length ? Math.min(...ibP.map(p=>p.lo)) : pMin;
+
+  // Tails
+  let sellTailLo=pMax;
+  for(let p=pMax;p>=pMin;p--){if(rows[p].length===1)sellTailLo=p;else break;}
+  let buyTailHi=pMin;
+  for(let p=pMin;p<=pMax;p++){if(rows[p].length===1)buyTailHi=p;else break;}
+
+  // Generate Volume (correlated with TPO count + noise)
+  const volume = {};
+  for(let p=pMin;p<=pMax;p++){
+    const base = rows[p].length * 1200;
+    const noise = (Math.random()-0.5) * base * 0.4;
+    volume[p] = Math.max(100, Math.round(base + noise));
+  }
+  // Amplify POC volume
+  volume[poc] = Math.round(volume[poc] * 1.4);
+
+  // VP POC
+  let vpPoc=pMin, maxVol=0;
+  for(let p=pMin;p<=pMax;p++) if(volume[p]>maxVol){maxVol=volume[p];vpPoc=p;}
+
+  // VP Value Area
+  const totalVol=Object.values(volume).reduce((s,v)=>s+v,0);
+  const vtarget=Math.floor(totalVol*0.7);
+  let vcnt=volume[vpPoc], vpVah=vpPoc, vpVal=vpPoc;
+  while(vcnt<vtarget){
+    const up = vpVah<pMax ? volume[vpVah+1] : 0;
+    const dn = vpVal>pMin ? volume[vpVal-1] : 0;
+    if(up>=dn && vpVah<pMax){vpVah++;vcnt+=volume[vpVah];}
+    else if(vpVal>pMin){vpVal--;vcnt+=volume[vpVal];}
+    else break;
+  }
+
+  return {rows,volume,pMin,pMax,poc,vah,val,ibH,ibL,sellTailLo,buyTailHi,vpPoc,vpVah,vpVal};
+}
+
+// ── DRAW TPO ──────────────────────────────────────
+function drawTPO(canvas, prof) {
+  const ctx = canvas.getContext('2d');
+  const {rows,pMin,pMax,poc,vah,val,ibH,ibL,sellTailLo,buyTailHi} = prof;
+  const count = pMax - pMin + 1;
+  const W = canvas.width, H = canvas.height;
+  const rowH = Math.floor(H / count);
+
+  ctx.fillStyle = '#0a0c12';
+  ctx.fillRect(0,0,W,H);
+
+  function py(p){ return H - (p-pMin)*rowH - rowH/2; }
+
+  // VA background
+  const vaTop = py(vah)-rowH/2, vaBot = py(val)+rowH/2;
+  ctx.fillStyle = COLORS.va;
+  ctx.fillRect(0,vaTop,W,vaBot-vaTop);
+  ctx.strokeStyle = COLORS.vaBorder;
+  ctx.lineWidth=1; ctx.setLineDash([3,3]);
+  ctx.strokeRect(0,vaTop,W,vaBot-vaTop);
+  ctx.setLineDash([]);
+
+  // IB background
+  ctx.fillStyle = COLORS.ib;
+  ctx.fillRect(0,py(ibH)-rowH/2,W,py(ibL)+rowH/2-(py(ibH)-rowH/2));
+
+  // Tails
+  if(sellTailLo<pMax){
+    ctx.fillStyle = COLORS.tail;
+    ctx.fillRect(0,py(pMax)-rowH/2,W,py(sellTailLo)+rowH/2-(py(pMax)-rowH/2));
+  }
+  if(buyTailHi>pMin){
+    ctx.fillStyle = COLORS.tail;
+    ctx.fillRect(0,py(buyTailHi)-rowH/2,W,py(pMin)+rowH/2-(py(buyTailHi)-rowH/2));
+  }
+
+  // POC line
+  ctx.strokeStyle = COLORS.poc; ctx.lineWidth=1.5; ctx.setLineDash([3,2]);
+  ctx.beginPath(); ctx.moveTo(0,py(poc)); ctx.lineTo(W,py(poc)); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // IB border
+  ctx.strokeStyle = COLORS.ibBorder; ctx.lineWidth=1;
+  [[ibH,-1],[ibL,1]].forEach(([p,dir])=>{
+    const y = py(p) + dir*rowH/2;
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  });
+
+  // Labels
+  ctx.font = 'bold 8px JetBrains Mono,monospace';
+  ctx.fillStyle='#7c6fff'; ctx.fillText('VAH', W-26, py(vah)-rowH/2+8);
+  ctx.fillText('VAL', W-26, py(val)+rowH/2-2);
+  ctx.fillStyle='#48bb78'; ctx.fillText('IBH', W-52, py(ibH)-rowH/2+8);
+  ctx.fillText('IBL', W-52, py(ibL)+rowH/2-2);
+  ctx.fillStyle=COLORS.poc; ctx.fillText('POC', W-76, py(poc)+3);
+
+  // Letters
+  ctx.font = `bold ${LETTER_SZ}px JetBrains Mono,monospace`;
+  for(let price=pMin;price<=pMax;price++){
+    rows[price].forEach((letter,i)=>{
+      const pidx = PERIODS.indexOf(letter);
+      ctx.fillStyle = price===poc ? COLORS.poc : COLORS.letters[pidx%COLORS.letters.length];
+      ctx.shadowColor = price===poc ? '#ffd70060':'transparent';
+      ctx.shadowBlur  = price===poc ? 4 : 0;
+      ctx.fillText(letter, i*(CELL_W+1), py(price)+LETTER_SZ/2-1);
+    });
+  }
+  ctx.shadowBlur=0;
+}
+
+// ── DRAW VP ───────────────────────────────────────
+function drawVP(canvas, prof) {
+  const ctx = canvas.getContext('2d');
+  const {volume,pMin,pMax,vpPoc,vpVah,vpVal} = prof;
+  const count = pMax - pMin + 1;
+  const W = canvas.width, H = canvas.height;
+  const rowH = Math.floor(H / count);
+  const maxVol = Math.max(...Object.values(volume));
+
+  ctx.fillStyle = '#0a0c12';
+  ctx.fillRect(0,0,W,H);
+
+  function py(p){ return H - (p-pMin)*rowH; }
+
+  // VA background
+  const vaTop=py(vpVah), vaBot=py(vpVal)+rowH;
+  ctx.fillStyle='rgba(108,99,255,0.1)';
+  ctx.fillRect(0,vaTop,W,vaBot-vaTop);
+  ctx.strokeStyle='rgba(108,99,255,0.4)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+  ctx.strokeRect(0,vaTop,W,vaBot-vaTop);
+  ctx.setLineDash([]);
+
+  // Bars
+  for(let price=pMin;price<=pMax;price++){
+    const vol = volume[price]||0;
+    const barW = Math.max(2, Math.round((vol/maxVol)*(W-2)));
+    const y = py(price);
+    const isLVN = barW < (W-2)*0.15;
+
+    let grad;
+    if(price===vpPoc){
+      grad = ctx.createLinearGradient(0,0,barW,0);
+      grad.addColorStop(0,'rgba(255,215,0,0.9)');
+      grad.addColorStop(1,'rgba(255,215,0,0.3)');
+    } else if(price>=vpVal && price<=vpVah){
+      grad = ctx.createLinearGradient(0,0,barW,0);
+      grad.addColorStop(0,'rgba(108,99,255,0.85)');
+      grad.addColorStop(1,'rgba(108,99,255,0.25)');
+    } else if(isLVN){
+      grad = ctx.createLinearGradient(0,0,barW,0);
+      grad.addColorStop(0,'rgba(108,99,255,0.25)');
+      grad.addColorStop(1,'rgba(108,99,255,0.05)');
+    } else {
+      grad = ctx.createLinearGradient(0,0,barW,0);
+      grad.addColorStop(0,'rgba(108,99,255,0.55)');
+      grad.addColorStop(1,'rgba(108,99,255,0.15)');
+    }
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, y, barW, Math.max(1, rowH-1));
+
+    // POC glow
+    if(price===vpPoc){
+      ctx.shadowColor='rgba(255,215,0,0.4)'; ctx.shadowBlur=6;
+      ctx.fillStyle='rgba(255,215,0,0.9)';
+      ctx.fillRect(0, y, barW, Math.max(1,rowH-1));
+      ctx.shadowBlur=0;
+    }
+  }
+
+  // POC line
+  const pocY = py(vpPoc)+rowH/2;
+  ctx.strokeStyle=COLORS.poc; ctx.lineWidth=1.5; ctx.setLineDash([3,2]);
+  ctx.beginPath(); ctx.moveTo(0,pocY); ctx.lineTo(W,pocY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.font='bold 8px JetBrains Mono,monospace';
+  ctx.fillStyle='#7c6fff';
+  ctx.fillText('VAH', 2, py(vpVah)+8);
+  ctx.fillText('VAL', 2, py(vpVal)+rowH-2);
+  ctx.fillStyle=COLORS.poc;
+  ctx.fillText('VPOC', 2, pocY-3);
+}
+
+// ── BUILD PRICE AXIS ──────────────────────────────
+function buildAxis(el, prof, rowH) {
+  const {pMin,pMax,poc,vah,val,ibH,ibL} = prof;
+  el.innerHTML='';
+  el.style.height = CANVAS_H+'px';
+  el.style.justifyContent='flex-end';
+  el.style.paddingBottom='0';
+
+  for(let p=pMax;p>=pMin;p--){
+    const div=document.createElement('div');
+    div.className='price-label';
+    div.style.height=rowH+'px';
+    div.style.minHeight=rowH+'px';
+    if(p%5===0||p===poc||p===vah||p===val||p===ibH||p===ibL)
+      div.textContent=p;
+    if(p===poc) div.classList.add('poc');
+    else if(p===vah) div.classList.add('vah');
+    else if(p===val) div.classList.add('val');
+    else if(p===ibH) div.classList.add('ibh');
+    else if(p===ibL) div.classList.add('ibl');
+    el.appendChild(div);
+  }
+}
+
+// ── BUILD STATS ───────────────────────────────────
+function buildStats(el, prof) {
+  const {pMin,pMax,poc,vah,val,ibH,ibL,vpPoc} = prof;
+  const items=[
+    {l:'Range',v:`${pMax-pMin} pts`},
+    {l:'TPO POC',v:poc},
+    {l:'VP POC',v:vpPoc},
+    {l:'VAH',v:vah},
+    {l:'VAL',v:val},
+    {l:'IB',v:`${ibH-ibL} pts`},
+  ];
+  el.innerHTML=items.map(i=>`
+    <div class="stat"><div class="stat-label">${i.l}</div><div class="stat-value">${i.v}</div></div>
+  `).join('');
+}
+
+// ── RENDER A CARD ─────────────────────────────────
+function renderCard(def) {
+  const prof = buildProfile(def.data);
+  const count = prof.pMax - prof.pMin + 1;
+  const rowH  = Math.floor(CANVAS_H / count);
+
+  // Card
+  const card = document.createElement('div');
+  card.className = 'profile-card';
+  card.innerHTML = `
+    <div>
+      <div class="profile-title">${def.icon} ${def.title}</div>
+      <div class="profile-subtitle">${def.subtitle}</div>
+    </div>
+    <div class="charts-row">
+      <div class="price-axis" id="axis-${def.id}"></div>
+      <div class="chart-col">
+        <div class="col-header">TPO Chart</div>
+        <canvas id="tpo-${def.id}" width="${TPO_W}" height="${CANVAS_H}"></canvas>
+      </div>
+      <div class="chart-divider"></div>
+      <div class="chart-col">
+        <div class="col-header">Volume Profile</div>
+        <canvas id="vp-${def.id}" width="${VP_W}" height="${CANVAS_H}"></canvas>
+      </div>
+    </div>
+    <div class="stats-row" id="stats-${def.id}"></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#ffd700;"></div>POC</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(108,99,255,0.5);border:1px solid #7c6fff;"></div>Value Area</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(72,187,120,0.4);border:1px solid #48bb78;"></div>Initial Balance</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(245,101,101,0.4);border:1px solid #f56565;"></div>Tail</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(108,99,255,0.2);"></div>LVN</div>
+    </div>
+  `;
+  document.getElementById('profiles-row').appendChild(card);
+
+  // Draw
+  drawTPO(document.getElementById(`tpo-${def.id}`), prof);
+  drawVP (document.getElementById(`vp-${def.id}`),  prof);
+  buildAxis(document.getElementById(`axis-${def.id}`), prof, rowH);
+  buildStats(document.getElementById(`stats-${def.id}`), prof);
+}
+
+// ══════════════════════════════════════════
+//   PROFILES
+// ══════════════════════════════════════════
+const PROFILES = [
+  {
+    id:'trend', icon:'📈', title:'Trend Day — Bullish', subtitle:'b-shape • Strong directional • Buying tail at low',
+    data:[
+      {period:'A',lo:2165,hi:2178},{period:'B',lo:2162,hi:2176},
+      {period:'C',lo:2160,hi:2173},{period:'D',lo:2163,hi:2179},
+      {period:'E',lo:2168,hi:2183},{period:'F',lo:2173,hi:2188},
+      {period:'G',lo:2178,hi:2193},{period:'H',lo:2182,hi:2197},
+      {period:'I',lo:2185,hi:2200},{period:'J',lo:2188,hi:2203},
+      {period:'K',lo:2191,hi:2205},{period:'L',lo:2193,hi:2207},
+      {period:'M',lo:2195,hi:2208},
+    ]
+  },
+  {
+    id:'normal', icon:'⚖️', title:'Normal Variation Day', subtitle:'P-shape • One-way extension • Selling tail at top',
+    data:[
+      {period:'A',lo:2170,hi:2185},{period:'B',lo:2168,hi:2189},
+      {period:'C',lo:2165,hi:2192},{period:'D',lo:2167,hi:2191},
+      {period:'E',lo:2169,hi:2193},{period:'F',lo:2172,hi:2196},
+      {period:'G',lo:2175,hi:2198},{period:'H',lo:2178,hi:2200},
+      {period:'I',lo:2180,hi:2202},{period:'J',lo:2183,hi:2203},
+      {period:'K',lo:2183,hi:2202},{period:'L',lo:2182,hi:2200},
+      {period:'M',lo:2181,hi:2203},
+    ]
+  },
+  {
+    id:'nontrend', icon:'😴', title:'Non-Trend Day', subtitle:'Wide IB • No extension • Wait for breakout',
+    data:[
+      {period:'A',lo:2168,hi:2198},{period:'B',lo:2165,hi:2200},
+      {period:'C',lo:2167,hi:2196},{period:'D',lo:2169,hi:2197},
+      {period:'E',lo:2170,hi:2195},{period:'F',lo:2169,hi:2196},
+      {period:'G',lo:2168,hi:2197},{period:'H',lo:2170,hi:2195},
+      {period:'I',lo:2169,hi:2196},{period:'J',lo:2171,hi:2194},
+      {period:'K',lo:2170,hi:2195},{period:'L',lo:2169,hi:2197},
+      {period:'M',lo:2168,hi:2198},
+    ]
+  },
+];
+
+PROFILES.forEach(renderCard);
+</script>
+</body>
+</html>
