@@ -183,7 +183,7 @@ Price ↑
   |
   └──────────────────────────→ Time
 
-→ Bargaining: Offer 100 TL → "Absolutely not!" → thrown out the door
+→ Bargaining: Offer 100 $ → "Absolutely not!" → thrown out the door
 → Rubber ball: Hits the ground and bounces back with the same speed
 ```
 
